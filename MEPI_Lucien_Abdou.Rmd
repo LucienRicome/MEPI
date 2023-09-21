@@ -1,0 +1,158 @@
+---
+title: "Analyse de sensibilité"
+author: "Lucien Ricome & Abdourahmane Diallo"
+date: "2023-09-11"
+output: html_document
+---
+
+```{r setup}
+
+library(ggplot2)
+source("functionModProjet2023.r")
+library(dplyr)
+library(tidyr)
+library(knitr) ; library(kableExtra)
+library(reactable)
+
+```
+
+
+## Description du modèle
+
+### 1) Type de modèle
+
+Ce modèle est deterministe parce qu'il est défini par des équations deterministes ne comportant aucun terme tiré aléatoirement. Il est basé sur un pas de temps discret et est un modèle à compartiments.
+
+### 2) Processus biologique
+
+La propagation d'une maladie infectieuse au sein d'une population est simulée ici. 
+
+
+### 3) Equations associées
+
+Première classe d'âge : 
+
+$$\begin{cases}
+A_{S,t+1} = A_{S,t}\times(1-m_1-t-trans\times \frac{N_{I,t}}{N}) + loss \times A_{R,t} + max(0 , sr \times portée \times \sum_{i=1}^{4} B_{i, t} \times f_2 + \sum_{i=1}^{4} C_{i, t} \times f_3 \times (1- \frac{N}{K})) \\
+A_{E,t+1} = A_{E,t}\times(1-m_1-t-lat) + trans \times A_{1,t} \times  A_{S,t} \times \frac{N_I}{N} \\
+A_{I,t+1} = A_{I,t}\times(1-m_1-t-madd - rec) + lat \times A_{E,t} \\
+A_{R,t+1} = A_{R,t}\times(1-m_1-t-loss) + rec \times A_{I,t} \\
+
+\end{cases}$$
+
+Deuxième classe d'âge : 
+
+$$\begin{cases}
+
+B_{S,t+1} = A_{S,t}\times t_1 + B_{S,t} \times (1-m_2 - t_2 - trans \times \frac{N_{I,t}}{N_t})+ loss \times B_{R,t} \\
+B_{E,t+1} = A_{E,t}\times t_1 + B_{E,t} \times (1-m_2 - t_2 - lat) + trans \times B_{S,t} \times \frac {N_{I,t}}{N_t} \\
+B_{I,t+1} = = A_{I,t}\times t_1 + B_{I,t} \times (1-m_2 - t_2 - madd - rec) + lat \times B_{2,t} \\
+B_{R,t+1} = A_{R,t}\times t_1 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times B_{3,t} \\
+
+\end{cases}$$
+
+Troisième classe d'âge : 
+ 
+$$\begin{cases}
+
+C_{S,t+1} = B_{S,t}\times t_2 + C_{S,t} \times (1-m_3 - trans \times \frac{N_{I,t}}{N_t}) + loss \times C_{R,t} \\
+C_{E,t+1} = B_{E,t}\times t_2 + C_{E,t} \times (1-m_3 - lat) + trans \times C_{S,t} \times \frac {N_{I,t}}{N_t} \\
+C_{I,t+1} = = B_{I,t}\times t_2 + C_{I,t} \times (1-m_3 -  madd - rec) + lat \times C_{2,t} \\
+C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times B_{3,t} \\
+
+\end{cases}$$
+
+### Schéma des transition
+
+### Hypothèses principales
+
+### Conditions initiales
+
+### Sorties possibles du modèle
+
+### Figures 
+
+```{r Figures mod1}
+
+# Initialisation des paramètres 
+
+ValNominale = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001)
+
+parametres = matrix(data = ValNominale, ncol = 15)
+
+
+# Exécution du modèle
+
+sorties = modAppli(parametre = parametres) 
+predictions = sorties[[2]][[1]]
+
+# Sorties du modèle
+
+sorties[[1]] %>%
+  kable(format = "latex", booktab = FALSE, caption = "Ma table")
+
+# Représentations graphiques des prédictions.
+
+    # plot en base
+
+temps = 365*2
+
+titres = c("Classe 1",
+          "Classe 2",
+          "Classe 3",
+          "Population totale")
+
+
+par(mfrow = c(2,2))
+
+for (i in 1:4) {
+plot_initial(classe = i, 
+             titre = titres[i])
+}
+
+
+```
+## Analyse de sensibilité : OAT
+
+### a) Choix des variations des paramètres
+
+
+```{r Analyse de sensibilité OAT}
+
+
+
+# Création d'une matrice contenant les valeurs de paramètres possibles
+
+# Incréments de chaque paramètre à choisir (sachant qu'il y est effectué 10 itérations)
+
+increment = c(1, 0.05, 0.0001, 0.00001, 
+              0.0002, 0.0002, 0.0003, 0.5, 
+              0.0002, 0.0002, 0.03, 0.01, 
+              0.0005, 0.0005, 0.0004)
+
+parametre = var_param(parametres = parametres, increment = increment)
+
+# Lancement du modèles pour chaque valeur de paramètres
+
+sorties_oat = list()
+
+for (i in 1:15){
+
+OAT = modAppli(parametre = parametre[[i]])
+sorties_oat[[i]] = OAT[[1]]
+
+}
+
+
+
+
+
+par(mfrow = c(2,2))
+
+
+plot_OAT(sortie = 1)
+
+
+
+```
+
