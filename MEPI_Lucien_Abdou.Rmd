@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup}
 
-library(ggplot2)
+library(ggplot2) # TESTTTTT
 source("functionModProjet2023.r")
 library(dplyr)
 library(tidyr)
