@@ -1,16 +1,16 @@
-### Modèle dont la sensibilité doit être analysée dans le cadre du projet MODE-MPI 2023-2024
+### Mod?le dont la sensibilit? doit ?tre analys?e dans le cadre du projet MODE-MPI 2023-2024
 
-### Le modèle est ici défini sous forme de fonction pour faciliter vos analyses de sensibilité (AS)
-### La fonction renvoie les sorties ponctuelles qui sont à analyser dans l'AS
+### Le mod?le est ici d?fini sous forme de fonction pour faciliter vos analyses de sensibilit? (AS)
+### La fonction renvoie les sorties ponctuelles qui sont ? analyser dans l'AS
 
 modAppli <- function(parametre){  
 
   # CONDITIONS DE SIMULATION
   temps = 2*365; # nb de pas de temps (en jours)
-  # initialisation pour la sauvegarde de 4 sorties ponctuelles pour chaque jeu de paramètres
+  # initialisation pour la sauvegarde de 4 sorties ponctuelles pour chaque jeu de param?tres
   sorties <- matrix(0, nrow=nrow(parametre), ncol=4)
   List_mat = list()
-  # boucle des scénarios de l'échantillonnage de l'AS
+  # boucle des sc?narios de l'?chantillonnage de l'AS
   for (i in 1:nrow(parametre)) { 
 
     # STRUCTURE & PARAMETRES DU MODELE
@@ -36,44 +36,44 @@ modAppli <- function(parametre){
 
     # INITIALISATION
     
-    MAT <- array(0, dim=c(4,4,temps)); # nb indiv par classe d'âge en ligne (dernière ligne = pop tot), état de santé en colonne, pas de temps (dimension 3)
+    MAT <- array(0, dim=c(4,4,temps)); # nb indiv par classe d'?ge en ligne (derni?re ligne = pop tot), ?tat de sant? en colonne, pas de temps (dimension 3)
     nvinf <- array(0, dim=c(temps));
     
-    # conditions initiales (la population est à sa structure d'équilibre, calculée par ailleurs)
+    # conditions initiales (la population est ? sa structure d'?quilibre, calcul?e par ailleurs)
     MAT[1,1,1] <- 27; # xx
     MAT[2,1,1] <- 23; # xx
     MAT[3,1,1] <- 36; # xx
     MAT[3,3,1] <- 1;  # xx
-    # effectifs par état de santé
+    # effectifs par ?tat de sant?
     MAT[4,1,1] <- sum(MAT[1:3,1,1]); MAT[4,2,1] <- sum(MAT[1:3,2,1]); MAT[4,3,1] <- sum(MAT[1:3,3,1]); MAT[4,4,1] <- sum(MAT[1:3,4,1]);
 
     # SIMULATIONS
     # boucle du temps
     for (t in 1:(temps-1)) { 
-     # classe d'âge xx
-      # RQ : les naissances sont XX, les nouveaux nés étant dans l'état XX
+     # classe d'?ge xx
+      # RQ : les naissances sont XX, les nouveaux n?s ?tant dans l'?tat XX
       N <- sum(MAT[4,,t]);	# taille de la pop en t
 	MAT[1,1,t+1] <- MAT[1,1,t]*(1-m1-t1-trans*MAT[4,3,t]/N) + loss*MAT[1,4,t]      + max(0, sr*portee*(sum(MAT[2,,t])*f2 + sum(MAT[3,,t])*f3) * (1 - N/K)); 
 	MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
 	MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-rec)  		  + lat*MAT[1,2,t]; 
 	MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t]; 
-     # classe d'âge xx
+     # classe d'?ge xx
 	MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,4,t];
 	MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
 	MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-rec)		+ lat*MAT[2,2,t];
 	MAT[2,4,t+1] <- MAT[1,4,t]*t1	+ MAT[2,4,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t];
-     # classe d'âge xx
+     # classe d'?ge xx
 	MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,4,t];
 	MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
 	MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-rec)			+ lat*MAT[3,2,t];
 	MAT[3,4,t+1] <- MAT[2,4,t]*t2	+ MAT[3,4,t]*(1-m3-loss)			+ rec*MAT[3,3,t];
-     # calcul des effectifs par état de santé
+     # calcul des effectifs par ?tat de sant?
 	MAT[4,1,t+1] <- sum(MAT[1:3,1,t+1]); MAT[4,2,t+1] <- sum(MAT[1:3,2,t+1]); MAT[4,3,t+1] <- sum(MAT[1:3,3,t+1]); MAT[4,4,t+1] <- sum(MAT[1:3,4,t+1]);
 	nvinf[t+1]   <- trans*MAT[4,1,t]*MAT[4,3,t]/N
 
     }# fin boucle temps
 
-    # sorties ponctuelles à analyser
+    # sorties ponctuelles ? analyser
     # XX
     sortie1 <- (MAT[4,2,temps]+MAT[4,3,temps])/sum(MAT[4,,temps])
     # xx
@@ -91,22 +91,22 @@ modAppli <- function(parametre){
     List_mat[[i]] = MAT
     
     
-  } # fin boucle scénarios AS
+  } # fin boucle sc?narios AS
   
   ensemble = list(sorties, List_mat)
   
   return(ensemble)
   
-} # fin fonction du modèle
+} # fin fonction du mod?le
 
 # END
 
 
-# Première fonction graphique (partie 1), illustration de la première simulation.
+# Premi?re fonction graphique (partie 1), illustration de la premi?re simulation.
 
   # Arguments : 
       # classe --> dans [1:4] 1 = classe 1, 2 = classe 2, 3 = classe 3, 4 = population totale
-      # Titre --> Chaîne de caractère
+      # Titre --> Cha?ne de caractÃ¨re
 
 plot_initial = function(classe, titre) {
   
@@ -121,7 +121,7 @@ plot_initial = function(classe, titre) {
       legend(x = "topright", legend = c("Susceptibles",
                                        "Latents", 
                                        "Infectieux", 
-                                       "Immunisés", 
+                                       "ImmunisÃ©s", 
                                        "Population totale"), 
              col = c("yellow", "orange", "red", "green", "black"),lty = 1,
             cex = 0.5)
@@ -129,25 +129,23 @@ plot_initial = function(classe, titre) {
 }
 
 
-    ### Partie 2 : Analyse de sensibilité OAT
+    ### Partie 2 : Analyse de sensibilit? OAT
 
-# Fonction de variation de chaque paramètre.
+# Fonction de variation de chaque param?tre.
 
   # Arguments : 
-      # parametres --> Valeurs des paramètres initiaux (matrice 1x15)
-      # increment --> variations de chaque paramètres par itération (vecteur de longueur 15)
+      # parametres --> Valeurs des param?tres initiaux (matrice 1x15)
+      # increment --> variations de chaque param?tres par it?ration (vecteur de longueur 15)
   
-  # Sorties : 
-      # parametres --> matrice 10 x 15 contenant toutes les valeurs de paramètres 
 
 
 var_param = function(parametres, increment){
   param = list()
-  null = matrix(numeric(0), ncol = 15, nrow = 9)
+  null = matrix(numeric(0), ncol = 15, nrow = 10)
   for (j in 1:15){  
     parametre <- rbind(parametres, null)
     
-    for (i in 2:10){
+    for (i in 2:11){
       parametre[i,j] = parametre[i-1,j]+increment[j] 
       parametre[i,-j] = parametres[1,-j]
       colnames(parametre) = c("k", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss","madd")
@@ -158,11 +156,11 @@ var_param = function(parametres, increment){
   return(param)
 }
 
-# Fonction graphique pour OAT chaque paramètre.
+# Fonction graphique pour OAT chaque param?tre.
 
   # Arguments : 
       # classe --> dans [1:4] 1 = classe 1, 2 = classe 2, 3 = classe 3, 4 = population totale
-      # Titre --> Chaîne de caractère
+      # Titre --> Cha?ne de caract?re
 
 plot_OAT = function(sortie, param) {
   
@@ -172,6 +170,6 @@ plot_OAT = function(sortie, param) {
 
 
 
-      ### Partie 3 : Analyse de sensibilité par la méthode Morris
+      ### Partie 3 : Analyse de sensibilit? par la m?thode Morris
 
 

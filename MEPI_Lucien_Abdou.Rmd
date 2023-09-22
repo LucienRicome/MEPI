@@ -89,7 +89,7 @@ predictions = sorties[[2]][[1]]
 # Sorties du modèle
 
 sorties[[1]] %>%
-  kable(format = "latex", booktab = FALSE, caption = "Ma table")
+  kable(format = "html", booktab = FALSE, caption = "Ma table")
 
 # Représentations graphiques des prédictions.
 
@@ -125,7 +125,7 @@ plot_initial(classe = i,
 
 # Incréments de chaque paramètre à choisir (sachant qu'il y est effectué 10 itérations)
 
-increment = c(1, 0.05, 0.0001, 0.00001, 
+increment = c(10, 0.05, 0.0001, 0.00001, 
               0.0002, 0.0002, 0.0003, 0.5, 
               0.0002, 0.0002, 0.03, 0.01, 
               0.0005, 0.0005, 0.0004)
@@ -143,16 +143,36 @@ sorties_oat[[i]] = OAT[[1]]
 
 }
 
+Elasticite = list()
+matrice = matrix(numeric(0), nrow = 11, ncol = 4)
 
+for (i in 1:15){
+  matrice = matrix(numeric(0), nrow = 10, ncol = 4)
+  for (j in 1:4){
+    elas = sorties_oat[[i]][2:11,j] / parametre[[i]][2:11,i] * ((sorties_oat[[i]][2:11,j]-sorties_oat[[i]][1:10,j]) / (parametre[[i]][2:11,i] - parametre[[i]][1:10,i]))
+    matrice[,j] = elas
+  }
+  Elasticite[[i]] = matrice
+}
 
+# compilation des tableaux
 
+for (i in 1:15){
+sortie_1[,i] <- Elasticite[[i]][,2]
+}
 
-par(mfrow = c(2,2))
+colnames(sortie_1) = c("k", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss","madd")
 
+# violin plots
 
-plot_OAT(sortie = 1)
+sortie_1 <- sortie_1 %>%
+  pivot_longer(c("k", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss","madd"))%>%
+  rename(parametre = name, Elasticite = value)
 
-
+sortie_1 %>%
+  ggplot(aes( y=Elasticite,  x= parametre)) +
+    geom_boxplot()+
+  geom_jitter()
 
 ```
 
