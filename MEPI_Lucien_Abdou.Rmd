@@ -17,18 +17,17 @@ library(reactable)
 ```
 
 
-## Description du modèle
+## 1) Description du modèle
 
-### 1) Type de modèle
+### a) Type de modèle
 
 Ce modèle est deterministe parce qu'il est défini par des équations deterministes ne comportant aucun terme tiré aléatoirement. Il est basé sur un pas de temps discret et est un modèle à compartiments.
 
-### 2) Processus biologique
+### a) Processus biologique
 
-La propagation d'une maladie infectieuse au sein d'une population est simulée ici. 
+Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie, les taux de guérison, les taux de mortalité, les taux de naissance, etc. …….
 
-
-### 3) Equations associées
+### c) Equations associées
 
 Première classe d'âge : 
 
@@ -62,15 +61,52 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 \end{cases}$$
 
-### Schéma des transition
+### d) Schéma des transition
 
-### Hypothèses principales
+### e) Hypothèses principales
+- Transmission directe;
+- Population en trois classes d'âge;
+- Quatres étast liés à la maladie : 1) susceptible, 2)latent, 3)infectieux et 4)retiré
+- Ce sont uniquement les individus infectés que peuvent transmettre la maladie;
+- Les individus peuvent perdre leur immunité
+- Transmission de la maladie fréquence dépendante
 
-### Conditions initiales
 
-### Sorties possibles du modèle
+### f) Conditions initiales
+Au début de la simulation, il y avait un nombre spécifique d'individus dans chaque classe d'âge et état de santé:
+- il y avait 27 individus dans la première classe d'âge et dans l'état de santé Susceptible
+- il y avait 23 individus dans la deuxième classe d'âge et dans l'état de santé Susceptible
+- il y avait 36 individus dans la troisième classe d'âge et dans l'état de santé Susceptible
+- il y avait 1 individus dans la troisième classe d'âge et dans l'état de santé Infectieux
 
-### Figures 
+
+### g) Sorties possibles du modèle ***A CONFIRMER ?***
+Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de chaque scénario de simulation. Les sorties possibles sont:
+- Sortie 1=  pourcentage de la population dans les états de santé latente et infectieux par rapport à la population totale,
+- Sortie 2= Résultat de la fonction de transmission
+- Sortie 3 = maximum de la population dans l'état infectieux au fil des deux ans.
+- Sortie 4 = somme des fonction de transmission au cours de la première année de la simulation
+
+
+### h) Parametres du modèle
+K = 100 : Capacité maximale de la population
+sr =  0.5 : Taux de survie des descendants
+m1 =  0.0014 : Taux de mortalité naturelle de la première classe d’âge
+m2 =  0.00029 : Taux de mortalité naturelle  de la deuxième classe d’âge
+m3 =  0.0019 : Taux de mortalité naturelle  de la troisième classe d’âge
+f2 = 0.0019 : Taux de fécondité de la deuxième classe d’âge
+f3 =  0.0082 : Taux de fécondité de la troisième classe d’âge
+portee =  5 : Nombre total de descendant par individu
+t1 = 1/365: Transition de classe de 1 à 2
+t2 := 1/365: Transition de la classe 2 à 3
+trans =  0.3 probabilité qu’un individu susceptible devient latent
+lat = 1/5 : Période latente de la maladie
+rec =  1/20 probabilité qu’un individu infecté devient immunisé
+loss = 1/100 Probabilité qu’un individu immunisé redevienne susceptible
+madd = 0.001: Mortalité causé par la maladie
+
+
+### i) Figures 
 
 ```{r Figures mod1}
 
@@ -112,11 +148,16 @@ plot_initial(classe = i,
 
 
 ```
-## Analyse de sensibilité : OAT
+
+### j) Interprétation des figures
+
+
+## 2) Analyse de sensibilité : OAT
 
 ### a) Choix des variations des paramètres
 
 
+### b) Script
 ```{r Analyse de sensibilité OAT}
 
 
@@ -155,4 +196,13 @@ plot_OAT(sortie = 1)
 
 
 ```
+### c) Figures
+
+### d) Interpretation et limites
+
+## 2) Analyse de sensibilité : Moris
+
+### a) Figures
+### b) Comparaison entre OAT et Moris
+
 
