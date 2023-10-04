@@ -42,44 +42,50 @@ Le modèle simule la propagation d'une maladie dans une population en fonction d
 
 ## Equations associées
 
+\begin{align}
+
 Première classe d'âge : 
 
-$$\begin{cases}
+\begin{cases}
 A_{S,t+1} = A_{S,t}\times(1-m_1-t-trans\times \frac{N_{I,t}}{N}) + loss \times A_{R,t} + max(0 , sr \times portée \times \sum_{i=1}^{4} B_{i, t} \times f_2 + \sum_{i=1}^{4} C_{i, t} \times f_3 \times (1- \frac{N}{K})) \\
 A_{E,t+1} = A_{E,t}\times(1-m_1-t-lat) + trans \times A_{1,t} \times  A_{S,t} \times \frac{N_I}{N} \\
 A_{I,t+1} = A_{I,t}\times(1-m_1-t-madd - rec) + lat \times A_{E,t} \\
 A_{R,t+1} = A_{R,t}\times(1-m_1-t-loss) + rec \times A_{I,t} \\
 
-\end{cases}$$
+\end{cases}
 
 Deuxième classe d'âge : 
 
-$$\begin{cases}
+\begin{cases}
 
 B_{S,t+1} = A_{S,t}\times t_1 + B_{S,t} \times (1-m_2 - t_2 - trans \times \frac{N_{I,t}}{N_t})+ loss \times B_{R,t} \\
 B_{E,t+1} = A_{E,t}\times t_1 + B_{E,t} \times (1-m_2 - t_2 - lat) + trans \times B_{S,t} \times \frac {N_{I,t}}{N_t} \\
 B_{I,t+1} = = A_{I,t}\times t_1 + B_{I,t} \times (1-m_2 - t_2 - madd - rec) + lat \times B_{2,t} \\
 B_{R,t+1} = A_{R,t}\times t_1 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times B_{3,t} \\
 
-\end{cases}$$
+\end{cases}
 
 Troisième classe d'âge : 
  
-$$\begin{cases}
+\begin{cases}
 
 C_{S,t+1} = B_{S,t}\times t_2 + C_{S,t} \times (1-m_3 - trans \times \frac{N_{I,t}}{N_t}) + loss \times C_{R,t} \\
 C_{E,t+1} = B_{E,t}\times t_2 + C_{E,t} \times (1-m_3 - lat) + trans \times C_{S,t} \times \frac {N_{I,t}}{N_t} \\
 C_{I,t+1} = = B_{I,t}\times t_2 + C_{I,t} \times (1-m_3 -  madd - rec) + lat \times C_{2,t} \\
 C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times B_{3,t} \\
 
-\end{cases}$$
+\end{cases}
 
-## Schéma des transition
+
+## Schéma des transitions
+
+![Schéma des transitions](Schéma des transitions.png "Schéma des transitions du modèle") 
+![Fécondité](Fecondite.png "Schéma des transitions du modèle")
 
 ## Hypothèses principales
 - Transmission directe;
 - Population en trois classes d'âge;
-- Quatres étast liés à la maladie : 1) susceptible, 2)latent, 3)infectieux et 4)retiré
+- Quatres étast liés à la maladie : 1) susceptible, 2) latent, 3) infectieux et 4) retiré
 - Ce sont uniquement les individus infectés que peuvent transmettre la maladie;
 - Les individus peuvent perdre leur immunité
 - Transmission de la maladie fréquence dépendante
@@ -125,10 +131,13 @@ madd = 0.001: Mortalité causé par la maladie
 
 # Initialisation des paramètres 
 
+nom = c("K", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss", "madd"
+)
+
 ValNominale = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001)
 
 parametres = matrix(data = ValNominale, ncol = 15)
-
+colnames(parametres) <- nom
 
 # Exécution du modèle
 
@@ -137,8 +146,10 @@ predictions = sorties[[2]][[1]]
 
 # Sorties du modèle
 
+colnames(sorties[[1]]) <- c("Part des \n infectés \n instant final", "fct de transmission\n instant final", "Max infectieux", "somme\nfonction de transmission" )
+
 sorties[[1]] %>%
-  kable(format = "latex", booktab = FALSE, caption = "Ma table")
+  kable(format = "html", booktab = TRUE, caption = "Sorties du modèle")
 
 # Représentations graphiques des prédictions.
 
@@ -173,9 +184,57 @@ plot_initial(classe = i,
 
 
 ## Script
+
 ```{r Analyse de sensibilité OAT}
 
+# Saisie de la valeur des incréments par paramètre (dans l'ordre du vecteur "nom")
 
+increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002, 
+  0.0003, 0.5, 0.0002, 0.0002, 0.03, 
+  0.01, 0.0005, 0.0005, 0.0004
+)
+
+# Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
+
+parametres <- var_para(parametres = parametres, increment = increment)
+
+# Execution fonction oat (source) et stockage des résultats.
+
+data_E <-
+  data.frame(P = character(0), E1 = numeric(0), E2 = numeric(0), E3 = numeric(0), E4 = numeric(0)
+  ) # dataframe de stock vide
+
+for (t in 1:15) {
+  
+  results <- oat(matrices = parametres, parametres = t)
+  
+  # Créez un dataframe avec les résultats pour le paramètre t
+  data_elas <- data.frame(
+    P = as.factor(rep(results$Parametres, 10)),
+    E1 = as.numeric(results$Elasticite[, 1]),
+    E2 = as.numeric(results$Elasticite[, 2]),
+    E3 = as.numeric(results$Elasticite[, 3]),
+    E4 = as.numeric(results$Elasticite[, 4])
+  )
+  
+  # Ajoutez les résultats au dataframe principal
+  data_E <- rbind(data_E, data_elas)
+  
+}
+
+# Représentations graphiques de l'élasticité pour chaque paramètre
+
+data_E <- data_E %>% 
+  pivot_longer(cols = c("E1", "E2", "E3", "E4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données --> ggplot
+
+data_E$sorties <- as.factor(data_E$sorties)
+
+data_E %>%
+  ggplot(aes(x = P, y = Elasticite))+
+  geom_boxplot() +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_classic()+
+  facet_wrap(vars(sorties), ncol = 1)
 
 
 ```
