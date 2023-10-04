@@ -2,10 +2,23 @@
 title: "Analyse de sensibilité"
 author: "Lucien Ricome & Abdourahmane Diallo"
 date: "2023-09-11"
-output: html_document
----
 
-```{r setup}
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+    code_fold: hide
+    warning: no
+    message: no
+    number_sections: yes
+    
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+```{r packages}
 
 library(ggplot2) 
 source("functionModProjet2023.r")
@@ -17,17 +30,17 @@ library(reactable)
 ```
 
 
-## 1) Description du modèle
+# Description du modèle
 
-### a) Type de modèle
+## Type de modèle
 
 Ce modèle est deterministe parce qu'il est défini par des équations deterministes ne comportant aucun terme tiré aléatoirement. Il est basé sur un pas de temps discret et est un modèle à compartiments.
 
-### a) Processus biologique
+## Processus biologique
 
 Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie, les taux de guérison, les taux de mortalité, les taux de naissance, etc. …….
 
-### c) Equations associées
+## Equations associées
 
 Première classe d'âge : 
 
@@ -61,9 +74,9 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 \end{cases}$$
 
-### d) Schéma des transition
+## Schéma des transition
 
-### e) Hypothèses principales
+## Hypothèses principales
 - Transmission directe;
 - Population en trois classes d'âge;
 - Quatres étast liés à la maladie : 1) susceptible, 2)latent, 3)infectieux et 4)retiré
@@ -72,7 +85,7 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 - Transmission de la maladie fréquence dépendante
 
 
-### f) Conditions initiales
+## Conditions initiales
 Au début de la simulation, il y avait un nombre spécifique d'individus dans chaque classe d'âge et état de santé:
 - il y avait 27 individus dans la première classe d'âge et dans l'état de santé Susceptible
 - il y avait 23 individus dans la deuxième classe d'âge et dans l'état de santé Susceptible
@@ -80,7 +93,7 @@ Au début de la simulation, il y avait un nombre spécifique d'individus dans ch
 - il y avait 1 individus dans la troisième classe d'âge et dans l'état de santé Infectieux
 
 
-### g) Sorties possibles du modèle ***A CONFIRMER ?***
+## Sorties possibles du modèle ***A CONFIRMER ?***
 Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de chaque scénario de simulation. Les sorties possibles sont:
 - Sortie 1=  pourcentage de la population dans les états de santé latente et infectieux par rapport à la population totale,
 - Sortie 2= Résultat de la fonction de transmission
@@ -88,7 +101,7 @@ Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de ch
 - Sortie 4 = somme des fonction de transmission au cours de la première année de la simulation
 
 
-### h) Parametres du modèle
+## Parametres du modèle
 K = 100 : Capacité maximale de la population
 sr =  0.5 : Taux de survie des descendants
 m1 =  0.0014 : Taux de mortalité naturelle de la première classe d’âge
@@ -106,7 +119,7 @@ loss = 1/100 Probabilité qu’un individu immunisé redevienne susceptible
 madd = 0.001: Mortalité causé par la maladie
 
 
-### i) Figures 
+## Figures 
 
 ```{r Figures mod1}
 
@@ -149,60 +162,36 @@ plot_initial(classe = i,
 
 ```
 
-### j) Interprétation des figures
+## Interprétation des figures
 
 
-## 2) Analyse de sensibilité : OAT
 
-### a) Choix des variations des paramètres
+# Analyse de sensibilité : OAT
 
 
-### b) Script
+## Choix des variations des paramètres
+
+
+## Script
 ```{r Analyse de sensibilité OAT}
 
 
 
-# Création d'une matrice contenant les valeurs de paramètres possibles
-
-# Incréments de chaque paramètre à choisir (sachant qu'il y est effectué 10 itérations)
-
-increment = c(1, 0.05, 0.0001, 0.00001, 
-              0.0002, 0.0002, 0.0003, 0.5, 
-              0.0002, 0.0002, 0.03, 0.01, 
-              0.0005, 0.0005, 0.0004)
-
-parametre = var_param(parametres = parametres, increment = increment)
-
-# Lancement du modèles pour chaque valeur de paramètres
-
-sorties_oat = list()
-
-for (i in 1:15){
-
-OAT = modAppli(parametre = parametre[[i]])
-sorties_oat[[i]] = OAT[[1]]
-
-}
-
-
-
-
-
-par(mfrow = c(2,2))
-
-
-plot_OAT(sortie = 1)
-
-
 
 ```
-### c) Figures
 
-### d) Interpretation et limites
 
-## 2) Analyse de sensibilité : Moris
+## Figures
 
-### a) Figures
-### b) Comparaison entre OAT et Moris
+
+## Interpretation et limites
+
+
+# Analyse de sensibilité : Moris
+
+
+## Figures
+
+## Comparaison entre OAT et Moris
 
 
