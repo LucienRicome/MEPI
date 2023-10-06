@@ -40,7 +40,7 @@ Ce modèle est deterministe parce qu'il est défini par des équations determini
 
 Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie, les taux de guérison, les taux de mortalité, les taux de naissance, etc. …….
 
-## Equations associées
+## Equations associées **a verifier a la fin**
 
 \begin{align}
 
@@ -83,12 +83,12 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 ![Fécondité](Fecondite.png "Schéma des transitions du modèle")
 
 ## Hypothèses principales
-- Transmission directe;
-- Population en trois classes d'âge;
+- Transmission directe
+- Population en trois classes d'âge
 - Quatres étast liés à la maladie : 1) susceptible, 2) latent, 3) infectieux et 4) retiré
-- Ce sont uniquement les individus infectés que peuvent transmettre la maladie;
+- Ce sont uniquement les individus infectés qui peuvent transmettre la maladie;
 - Les individus peuvent perdre leur immunité
-- Transmission de la maladie fréquence dépendante
+- Transmission de la maladie par fréquence dépendante
 
 
 ## Conditions initiales
@@ -99,11 +99,11 @@ Au début de la simulation, il y avait un nombre spécifique d'individus dans ch
 - il y avait 1 individus dans la troisième classe d'âge et dans l'état de santé Infectieux
 
 
-## Sorties possibles du modèle ***A CONFIRMER ?***
+## Sorties possibles du modèle ***A CONFIRMER ***
 Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de chaque scénario de simulation. Les sorties possibles sont:
 - Sortie 1=  pourcentage de la population dans les états de santé latente et infectieux par rapport à la population totale,
-- Sortie 2= Résultat de la fonction de transmission
-- Sortie 3 = maximum de la population dans l'état infectieux au fil des deux ans.
+- Sortie 2= Résultat de la fonction de transmission à la fin des deux années
+- Sortie 3 = maximum du nombre d'individu infectieux dans l'état infectieux au fil des deux ans.
 - Sortie 4 = somme des fonction de transmission au cours de la première année de la simulation
 
 
@@ -119,10 +119,10 @@ portee =  5 : Nombre total de descendant par individu
 t1 = 1/365: Transition de classe de 1 à 2
 t2 := 1/365: Transition de la classe 2 à 3
 trans =  0.3 probabilité qu’un individu susceptible devient latent
-lat = 1/5 : Période latente de la maladie
-rec =  1/20 probabilité qu’un individu infecté devient immunisé
-loss = 1/100 Probabilité qu’un individu immunisé redevienne susceptible
-madd = 0.001: Mortalité causé par la maladie
+lat = 1/5 : taux de passage de l'état latente à l'état infectieux
+rec =  1/20 : probabilité qu’un individu infecté devient immunisé
+loss = 1/100 : Probabilité qu’un individu immunisé redevienne susceptible
+madd = 0.001 : Mortalité causé par la maladie
 
 
 ## Figures 
