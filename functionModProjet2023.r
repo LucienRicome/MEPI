@@ -110,9 +110,9 @@ modAppli <- function(parametre){
 
 plot_initial = function(classe, titre) {
   
-  plot(1:temps, predictions[classe,1,], type = "l", col = "yellow", cex = 2, 
+  plot(1:temps, predictions[classe,1,], type = "l", col = "brown", cex = 2, 
        xlab = "temps (jours)", ylab = "Effectif", main = titre)
-  lines(predictions[classe,2,], col = "orange", cex = 2)
+  lines(predictions[classe,2,], col = "brown", cex = 2)
   lines(predictions[classe,3,], col = "red", cex = 2)
   lines(predictions[classe,4,], col = "green", cex = 2)
   lines(predictions[classe,4,]+predictions[classe,3,]+predictions[classe,2,])
@@ -123,7 +123,7 @@ plot_initial = function(classe, titre) {
                                        "Infectieux", 
                                        "Immunis?s", 
                                        "Population totale"), 
-             col = c("yellow", "orange", "red", "green", "black"),lty = 1,
+             col = c("brown", "orange", "red", "green", "black"),lty = 1,
             cex = 0.5)
   }
 }
