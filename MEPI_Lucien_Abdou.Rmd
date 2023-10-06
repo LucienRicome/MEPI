@@ -19,14 +19,12 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 
 ```{r packages}
-
 library(ggplot2) 
 source("functionModProjet2023.r")
 library(dplyr)
 library(tidyr)
 library(knitr) ; library(kableExtra)
 library(reactable)
-
 ```
 
 test
@@ -45,7 +43,7 @@ Le modèle simule la propagation d'une maladie dans une population en fonction d
 
 \begin{align}
 
-Première classe d'âge : 
+Première classe d'âge : FAIRE LES REFERENCES
 
 \begin{cases}
 A_{S,t+1} = A_{S,t}\times(1-m_1-t-trans\times \frac{N_{I,t}}{N}) + loss \times A_{R,t} + max(0 , sr \times portée \times \sum_{i=1}^{4} B_{i, t} \times f_2 + \sum_{i=1}^{4} C_{i, t} \times f_3 \times (1- \frac{N}{K})) \\
@@ -190,7 +188,7 @@ plot_initial(classe = i,
 
 # Saisie de la valeur des incréments par paramètre (dans l'ordre du vecteur "nom")
 
-increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002, 
+increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
   0.0003, 0.5, 0.0002, 0.0002, 0.03, 
   0.01, 0.0005, 0.0005, 0.0004
 )
@@ -223,6 +221,13 @@ for (t in 1:15) {
   
 }
 
+
+```
+
+
+## Figures
+
+```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
 
 data_E <- data_E %>% 
@@ -233,16 +238,10 @@ data_E$sorties <- as.factor(data_E$sorties)
 data_E %>%
   ggplot(aes(x = P, y = Elasticite))+
   geom_boxplot() +
-  geom_jitter(color="black", size=0.4, alpha=0.9) +
   theme_classic()+
   facet_wrap(vars(sorties), ncol = 1)
 
-
 ```
-
-
-## Figures
-
 
 ## Interpretation et limites
 
@@ -254,4 +253,4 @@ data_E %>%
 
 ## Comparaison entre OAT et Moris
 
-
+hop
