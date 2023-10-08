@@ -262,7 +262,7 @@ oat = function(matrices, parametres) {
 } # fin de la fonction
 
 
-oat(matrices = matrix_para, parametres = 1)
+oat(matrices = parametres, parametres = 2)
 
 
 
@@ -327,6 +327,7 @@ plot(data_E$P, data_E$E4, xlab = "Parametres", ylab = "Sensibilité relative de 
 
 # Methode MORRIS ----------------------------------------------------------
 
+library(sensitivity)
 
 sorti_morris <- morris(
   model = modAppli,
@@ -337,8 +338,8 @@ sorti_morris <- morris(
     levels = 6,
     grid.jump = 3
   ),
-  binf = matrix_para[1, ], # le minimum des para
-  bsup = matrix_para[11, ] # le maximum des para
+  binf = parametres[1, ], # le minimum des para
+  bsup = parametres[11, ] # le maximum des para
 )
 
 

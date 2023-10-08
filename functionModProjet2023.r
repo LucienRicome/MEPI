@@ -108,11 +108,11 @@ modAppli <- function(parametre){
       # classe --> dans [1:4] 1 = classe 1, 2 = classe 2, 3 = classe 3, 4 = population totale
       # Titre --> Cha?ne de caract?re
 
-plot_initial = function(classe, titre) {
+plot_initial = function(classe, titre) { # Faire en ggplot2
   
-  plot(1:temps, predictions[classe,1,], type = "l", col = "brown", cex = 2, 
+  plot(1:temps, predictions[classe,1,], type = "l", col = "yellow", cex = 2, 
        xlab = "temps (jours)", ylab = "Effectif", main = titre)
-  lines(predictions[classe,2,], col = "brown", cex = 2)
+  lines(predictions[classe,2,], col = "orange", cex = 2)
   lines(predictions[classe,3,], col = "red", cex = 2)
   lines(predictions[classe,4,], col = "green", cex = 2)
   lines(predictions[classe,4,]+predictions[classe,3,]+predictions[classe,2,])
@@ -123,7 +123,7 @@ plot_initial = function(classe, titre) {
                                        "Infectieux", 
                                        "Immunis?s", 
                                        "Population totale"), 
-             col = c("brown", "orange", "red", "green", "black"),lty = 1,
+             col = c("yellow", "orange", "red", "green", "black"),lty = 1,
             cex = 0.5)
   }
 }
@@ -221,4 +221,18 @@ oat = function(matrices, parametres) {
 
       ### Partie 3 : Analyse de sensibilit? par la m?thode Morris
 
+# ----
 
+# Fonction d'extraction des sorties MORRIS \mu, \mu* et \sigma
+
+sorties_morris = function(vecteur_ee){
+  mu <- apply(vecteur_ee, 3, function(M){
+    apply(M, 2, mean)
+  })
+  mu.star <- apply(abs(vecteur_ee), 3, function(M){
+    apply(M, 2, mean)
+  })
+  sigma <- apply(vecteur_ee, 3, function(M){
+    apply(M, 2, sd)
+  })
+}

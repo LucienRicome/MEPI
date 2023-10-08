@@ -248,6 +248,25 @@ data_E %>%
 
 # Analyse de sensibilité : Moris
 
+```{r}
+
+library(sensitivity)
+
+sorti_morris <- morris(
+  model = modAppli,
+  factors = nom, # le nom des parametres
+  r = 5,
+  design = list(
+    type = "oat",n=100,
+    levels = 6,
+    grid.jump = 3
+  ),
+  binf = parametres[1, ], # le minimum des para
+  bsup = parametres[11, ] # le maximum des para
+)
+
+```
+
 
 ## Figures
 
