@@ -383,8 +383,8 @@ row.names(sigma)
 plot(sorti_morris, y_col = 1)
 plot(0.1, 0.1, type="n",ylim=c(0, 0.005),xlim=c(0, 0.06),xlab="mu.star",ylab="sigma")
 polygon(x = c(0,0,100),y = c(0,100,0),col = "blue",border = NA)
-polygon(x = c(0,0,0.01),y = c(0,100,0),col = "yellow",border = NA)
-polygon(x = c(0.01,100,0.01),y = c(0,0.002,0.002),col = "orange",border = NA)
+polygon(x = c(0,0,0.1),y = c(0,100,0),col = "yellow",border = NA)
+polygon(x = c(0.1,100,0.1),y = c(0,0.1,0.1),col = "orange",border = NA)
 points(mu.star$ycol1, sigma$ycol1)
 text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), pos = 3)
 
@@ -392,8 +392,8 @@ text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), pos = 3)
 plot(sorti_morris, y_col = 2)
 plot(0.1, 0.1, type="n",ylim=c(0, 0.040),xlim=c(0, 0.30),xlab="mu.star",ylab="sigma")
 polygon(x = c(0,0,100),y = c(0,100,0),col = "blue",border = NA)
-polygon(x = c(0,0,0.05),y = c(0,100,0),col = "yellow",border = NA)
-polygon(x = c(0.05,100,0.05),y = c(0,0.01,0.01),col = "orange",border = NA)
+polygon(x = c(0,0,0.1),y = c(0,100,0),col = "yellow",border = NA)
+polygon(x = c(0.1,100,0.1),y = c(0,0.01,0.01),col = "orange",border = NA)
 points(mu.star$ycol2, sigma$ycol2)
 text(mu.star$ycol2, sigma$ycol2, labels = row.names(sigma), pos = 3)
 
@@ -401,8 +401,8 @@ text(mu.star$ycol2, sigma$ycol2, labels = row.names(sigma), pos = 3)
 plot(sorti_morris, y_col = 3)
 plot(0.1, 0.1, type="n",ylim=c(0, 1.4),xlim=c(0, 12),xlab="mu.star",ylab="sigma")
 polygon(x = c(0,0,100),y = c(0,100,0),col = "blue",border = NA)
-polygon(x = c(0,0,1),y = c(0,100,0),col = "yellow",border = NA)
-polygon(x = c(1,900,1),y = c(0,0,0.2),col = "orange",border = NA)
+polygon(x = c(0,0,0.1),y = c(0,100,0),col = "yellow",border = NA)
+polygon(x = c(0.1,900,0.1),y = c(0,0,0.1),col = "orange",border = NA)
 points(mu.star$ycol3, sigma$ycol3)
 text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3)
 
@@ -411,8 +411,8 @@ text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3)
 plot(sorti_morris, y_col = 4)
 plot(0.1, 0.1, type="n",ylim=c(0, 12),xlim=c(0, 90),xlab="mu.star",ylab="sigma")
 polygon(x = c(0,0,200),y = c(0,100,0),col = "blue",border = NA)
-polygon(x = c(0,0,10),y = c(0,5000,0),col = "yellow",border = NA)
-polygon(x = c(10,5000,10),y = c(0,0,2),col = "orange",border = NA)
+polygon(x = c(0,0,0.1),y = c(0,5000,0),col = "yellow",border = NA)
+polygon(x = c(0.1,5000,0.1),y = c(0,0,0.1),col = "orange",border = NA)
 points(mu.star$ycol4, sigma$ycol4)
 text(mu.star$ycol4, sigma$ycol4, labels = row.names(sigma), pos = 3)
 
@@ -436,14 +436,18 @@ borne_para <- apply(matrix_para,
                      })
 
 
+borne_para <- apply( cbind(matrix_para[1,],
+                           matrix_para[11,]),
+                     1,
+                     function(x){list(min=x[1],max=x[2])} )
 
 # QUESTION b: Cas a 100 scenario
 start_time100 <- Sys.time()
 
-fast100 <- fast99(model=NULL,
+fast100 <- fast99(model=modAppli,
                       factors=nom,
                       n=100,
-                      q=rep("qnorm",15),
+                      q=rep("qunif",15),
                       q.arg=borne_para)
 
 
@@ -486,7 +490,7 @@ str(s_100)
 # Cas a 10000 scenario
 start_time1000 <- Sys.time()
 
-fast1000 <- fast99(model=NULL,
+fast1000 <- fast99(model=modAppli,
                   factors=nom,
                   n=1000,
                   q=rep("qnorm",15),
@@ -497,6 +501,7 @@ end_time1000 <- Sys.time()
 execution_time <- end_time1000 - start_time1000
 execution_time # 
 
+tell()
 
 plot(fast1000) 
 # 
@@ -655,6 +660,7 @@ modAppli(parametre = fast1000$X)
   
 
 
-
+x <-c(1.234,2.342,-4.562,5.671,12.345,-14.567)
+max(x)
 
 
