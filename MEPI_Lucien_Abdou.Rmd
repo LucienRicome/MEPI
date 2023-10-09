@@ -14,7 +14,7 @@ output:
     
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, results = "hide")
 ```
 
 
@@ -25,9 +25,10 @@ library(dplyr)
 library(tidyr)
 library(knitr) ; library(kableExtra)
 library(reactable)
+library(sensitivity)
 ```
 
-test
+
 
 # Description du modèle
 
@@ -107,24 +108,25 @@ Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de ch
 
 
 ## Parametres du modèle
-K = 100 : Capacité maximale de la population
-sr =  0.5 : Taux de survie des descendants
-m1 =  0.0014 : Taux de mortalité naturelle de la première classe d’âge
-m2 =  0.00029 : Taux de mortalité naturelle  de la deuxième classe d’âge
-m3 =  0.0019 : Taux de mortalité naturelle  de la troisième classe d’âge
-f2 = 0.0019 : Taux de fécondité de la deuxième classe d’âge
-f3 =  0.0082 : Taux de fécondité de la troisième classe d’âge
-portee =  5 : Nombre total de descendant par individu
-t1 = 1/365: Transition de classe de 1 à 2
-t2 := 1/365: Transition de la classe 2 à 3
-trans =  0.3 probabilité qu’un individu susceptible devient latent
-lat = 1/5 : taux de passage de l'état latente à l'état infectieux
-rec =  1/20 : probabilité qu’un individu infecté devient immunisé
-loss = 1/100 : Probabilité qu’un individu immunisé redevienne susceptible
-madd = 0.001 : Mortalité causé par la maladie
+- K = 100 : Capacité maximale de la population
+- sr =  0.5 : Taux de survie des descendants
+- m1 =  0.0014 : Taux de mortalité naturelle de la première classe d’âge
+- m2 =  0.00029 : Taux de mortalité naturelle  de la deuxième classe d’âge
+- m3 =  0.0019 : Taux de mortalité naturelle  de la troisième classe d’âge
+- f2 = 0.0019 : Taux de fécondité de la deuxième classe d’âge
+- f3 =  0.0082 : Taux de fécondité de la troisième classe d’âge
+- portee =  5 : Nombre total de descendant par individu
+- t1 = 1/365: Transition de classe de 1 à 2
+- t2 := 1/365: Transition de la classe 2 à 3
+- trans =  0.3 probabilité qu’un individu susceptible devient latent
+- lat = 1/5 : taux de passage de l'état latente à l'état infectieux
+- rec =  1/20 : probabilité qu’un individu infecté devient immunisé
+- loss = 1/100 : Probabilité qu’un individu immunisé redevienne susceptible
+- madd = 0.001 : Mortalité causé par la maladie
 
 
 ## Figures 
+***Peut être convertir la sorti generale de la fonction sous forme de tableau : colnames(sorties[[1]])***
 
 ```{r Figures mod1}
 
@@ -140,12 +142,12 @@ colnames(parametres) <- nom
 
 # Exécution du modèle
 
-sorties = modAppli(parametre = parametres) 
+sorties = modAppli_bis(parametre = parametres) 
 predictions = sorties[[2]][[1]]
 
 # Sorties du modèle
 
-colnames(sorties[[1]]) <- c("Part des \n infectés \n instant final", "fct de transmission\n instant final", "Max infectieux", "somme\nfonction de transmission" )
+colnames(sorties[[1]]) <- c("Part des \n infectés et latente \n instant final", "fct de transmission\n instant final", "Max infectieux", "somme\nfonction de transmission" )
 
 sorties[[1]] %>%
   kable(format = "html", booktab = TRUE, caption = "Sorties du modèle")
@@ -178,9 +180,10 @@ plot_initial(classe = i,
 
 # Analyse de sensibilité : OAT
 
+L'analyse de sensibilité "One-at-a-Time" (OAT) est une méthode qui vise à évaluer l'influence des paramètres d'un modèle sur ses résultats de manière individuelle. Cette approche consiste à modifier un paramètre à la fois, tout en maintenant les autres paramètres à leurs valeurs nominales (*ValNominale*), afin de mesurer l'impact de chaque paramètre sur les sortie  du modèle (*modAppli*).
 
 ## Choix des variations des paramètres
-
+Nous avons sélectionné 5 valeurs en dessous et au-dessus des valeurs nominales pour constituer les 10 valeurs pour chacune des 15 paramètres. Nous avons choisi un incrément (voir script ci-dessous) adapté à la grandeur de chaque paramètre.
 
 ## Script
 
@@ -190,12 +193,12 @@ plot_initial(classe = i,
 
 increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
   0.0003, 0.5, 0.0002, 0.0002, 0.03, 
-  0.01, 0.0005, 0.0005, 0.0004
+  0.01, 0.0005, 0.0005, 0.0001
 )
 
 # Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
 
-parametres <- var_para(parametres = parametres, increment = increment)
+all_parametres <- var_para(parametres = parametres, increment = increment)
 
 # Execution fonction oat (source) et stockage des résultats.
 
@@ -205,7 +208,7 @@ data_E <-
 
 for (t in 1:15) {
   
-  results <- oat(matrices = parametres, parametres = t)
+  results <- oat(matrices = all_parametres, parametres = t)
   
   # Créez un dataframe avec les résultats pour le paramètre t
   data_elas <- data.frame(
@@ -226,16 +229,20 @@ for (t in 1:15) {
 
 
 ## Figures
-
+Les figures ci-dessous illustent le comportement du modèle concernant les résultats de l'analyse de sansibilité OAT aevc l'indice d'Elasticité (sensibilité relative) pour chacune des quatres sorties du modèle (E1, E2, E3 et E4).
 ```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
 
-data_E <- data_E %>% 
+# Utilisation de abs() à toutes les colonnes numeric 
+data_E1 <- data_E %>%
+  mutate_if(is.numeric, abs)
+
+data_E2 <- data_E1 %>% 
   pivot_longer(cols = c("E1", "E2", "E3", "E4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données --> ggplot
 
-data_E$sorties <- as.factor(data_E$sorties)
+data_E2$sorties <- as.factor(data_E2$sorties)
 
-data_E %>%
+data_E2 %>%
   ggplot(aes(x = P, y = Elasticite))+
   geom_boxplot() +
   theme_classic()+
@@ -244,30 +251,365 @@ data_E %>%
 ```
 
 ## Interpretation et limites
+Les paramètres "rec", "loss", "trans", et "lat" exercent une influence prépondérante sur la sortie 1 qui était le pourcentage de la population dans les états de santé latents et infectieux par rapport à la population totale. Pour la sortie 2 qui était le résultat de la fonction de transmission des deux années de suivi, ce sont les paramètres "K" et "loss" qui démontrent la plus grande influence. Quant au maximum de la population dans l'état infectieux au fil des deux ans, ce sont les paramètres "rec", "trans", "K", et "lat" qui se révèlent être les plus significatifs. Enfin, en ce qui concerne la sortie 4 qui était la somme des fonctions de transmission au cours de la première année de la simulation, ce sont les paramètres "K", "loss", et "trans" qui affichent la plus forte influence.
+
+
+L'analyse de sensibilité basée sur One-at-a-Time (OAT) ne fournit des informations sur les influences que dans le voisinage des *valeurs nominales* appliquées. De plus, elle ne permet pas de mettre en évidence les *effets des interactions* entre les paramètres. Cette méthode d'analyse de sensibilité n'est pas particulièrement adaptée à notre *modèle non linéaire*, car l'OAT est une approche locale. Dans sa forme la plus simple, elle fournit des *dérivées partielles* du modèle par rapport aux paramètres d'entrée.
 
 
 # Analyse de sensibilité : Moris
-
-```{r}
+L'analyse de sensibilité de type Morris est une méthode qui sert à évaluer la sensibilité d'un modèle dont chaque entrée du modèle varie sur toute sa gamme de valeurs possibles.
+ 
+```{r Analyse de sensibilité morris}
 
 library(sensitivity)
 
+
+
+all_parametres <- var_para(parametres = parametres, increment = increment)
 sorti_morris <- morris(
   model = modAppli,
-  factors = nom, # le nom des parametres
+  factors = nom, 
   r = 5,
   design = list(
     type = "oat",n=100,
     levels = 6,
     grid.jump = 3
   ),
-  binf = parametres[1, ], # le minimum des para
-  bsup = parametres[11, ] # le maximum des para
+  binf = all_parametres[1, ], 
+  bsup = all_parametres[11, ] 
 )
+
+# Reccuper la sortie de Morris pour les graphique
+mu <- apply(sorti_morris$ee, 3, function(M){
+  apply(M, 2, mean)
+})
+mu.star <- apply(abs(sorti_morris$ee), 3, function(M){
+  apply(M, 2, mean)
+})
+sigma <- apply(sorti_morris$ee, 3, function(M){
+  apply(M, 2, sd)
+})
+
+mu.star= as.data.frame(mu.star)
+sigma= as.data.frame(sigma)
+row.names(sigma)
+
+
+```
+
+## Figures
+L'analyse de sensibilité "Morris" révèle que la plupart des paramètres ont des effets négligeables, notamment sur la sortie 1. En revanche, pour les sorties 3 et 4, tous les paramètres présentent des effets non linéaires et/ou avec des interactions significatives. De plus, en ce qui concerne la sortie 2, seul le paramètre "loss" montre un effet non linéaire, tandis que tous les autres paramètres ont des effets négligeables.
+
+
+*Legendes figures*
+- entrées ayant des effets négligeables (en jaune),
+- entrées ayant des effets linéaires et sans interaction (orange),
+- entrées ayant des effets non linéaires et/ou avec interactions (bleu)
+
+```{r, fig.height = 6}
+
+# zone de graphique en 2 colonnes et 2 lignes
+par(mfrow=c(2,2))
+
+
+
+# Sortie 1
+plot(0.1, 0.1, type="n", ylim=c(0, 0.005), xlim=c(0, 0.06), xlab="mu.star", ylab="sigma")
+polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
+polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(0.1,100,0.1), y = c(0,0.1,0.1), col = "orange", border = NA)
+points(mu.star$ycol1, sigma$ycol1)
+text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), cex = 1.3, pos = 3)
+title("Sortie 1")
+
+# Sortie 2
+plot(0.1, 0.1, type="n", ylim=c(0, 0.040), xlim=c(0, 0.30), xlab="mu.star", ylab="sigma")
+polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
+polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(0.1,100,0.1), y = c(0,0.01,0.01), col = "orange", border = NA)
+points(mu.star$ycol2, sigma$ycol2)
+text(mu.star$ycol2, sigma$ycol2, labels = row.names(sigma), pos = 3, cex = 1.3)
+title("Sortie 2")
+
+# Sortie 3
+plot(0.1, 0.1, type="n", ylim=c(0, 1.4), xlim=c(0, 12), xlab="mu.star", ylab="sigma")
+polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
+polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(0.1,900,0.1), y = c(0,0,0.1), col = "orange", border = NA)
+points(mu.star$ycol3, sigma$ycol3)
+text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3, cex = 1.3)
+title("Sortie 3")
+
+# Sortie 4
+plot(0.1, 0.1, type="n", ylim=c(0, 12), xlim=c(0, 90), xlab="mu.star", ylab="sigma")
+polygon(x = c(0,0,200), y = c(0,100,0), col = "skyblue", border = NA)
+polygon(x = c(0,0,0.1), y = c(0,5000,0), col = "yellow", border = NA)
+polygon(x = c(0.1,5000,0.1), y = c(0,0,0.1), col = "orange", border = NA)
+points(mu.star$ycol4, sigma$ycol4)
+text(mu.star$ycol4, sigma$ycol4, labels = row.names(sigma), pos = 3, cex = 1.3)
+title("Sortie 4")
+
 
 ```
 
 
-## Figures
-
 ## Comparaison entre OAT et Moris
+
+En comparant les deux approches, on constate que l'approche OAT se concentre sur des résultats spécifiques, tandis que la méthode Morris offre une perspective plus globale sur les effets des paramètres. Néanmoins, on retrouve des conclusions similaires concernant les paramètres les plus influents, qui sont principalement "loss", "trans", "portée" et "K".
+
+
+
+# Méthode FAST
+
+## Package
+
+Nous avons utilisé le package "sensitivity" (version 1.28.1) pour effectuer une analyse de sensibilité du modèle avec la méthode FAST. La fonction utilisée est "fast99" qui implémente la méthode "FAST - étendue" (Saltelli et al. 1999). Les éléments les plus importants pouvant être modulés sont : 
+
+- le modèle analysé
+- le nombre de simulations
+- La loi de probabilité utilisée.
+- Les paramètres de cette loi de probabilité
+
+Cette méthode a un coup $n\timesp$ simulations. Avec $n$ le nombre de scénarios par paramètres et $p$ le nombre de paramètres. Il faut choisir le nombre de simulations en fonction du nombre de paramètres analysés. plus le nombre de paramètres augmente, plus le nombre de simulation devient couteux en terme de temps de calcul.
+
+## Premier échantillonnage avec peu de simulation par paramètre.
+
+
+
+```{r Analyse FAST 100 simulations}
+
+## Initialisation des paramètres des lois de probailité utilisée
+
+# Lois normale
+borne_para_norm <- apply(all_parametres,
+                     2,
+                     function(x) {
+                       list(mean = mean(x), sd = sd(x))
+                     })
+
+#Lois uniforme
+borne_para_unif <- apply( cbind(all_parametres[1,],
+                           all_parametres[11,]),
+                     1,
+                     function(x){list(min=x[1],max=x[2])} )
+
+# Calcul pour 100 simulations 
+
+fast100 <- fast99(model=NULL, 
+                      factors=nom,
+                      n=100,
+                      q=rep("qunif",15),
+                      q.arg=borne_para_unif)
+
+# Présentation du nombre de simulations
+kable(data.frame("nombre de\nsimulations" = nrow(fast100$X),
+                 "nombre de\nparamètres" = ncol(fast100$X)),
+      format = "html")
+
+```
+
+L'échantillonnage avec 100 scénarios par paramètres fait 1500 simulations.
+
+## Illustration des variations des paramètres obtenues
+
+```{r Echantillonnage avec 1000 scénarios, fig.lenght = 8}
+
+# sauvegarde du tableau
+param_fast_100 <- fast100$X
+
+  
+graphs = list()
+
+for (i in nom){
+  plooot <- ggplot(param_fast_100, aes_string(y = i, x =   1:nrow(param_fast_100)))+
+    xlab("Indice")+
+    geom_point()+
+    theme_classic()
+  graphs[which(nom==i)] <- list(plooot) 
+  }
+
+names(graphs) <- nom
+
+library(ggpubr)
+
+ggarrange(plotlist = graphs, ncol = 3)
+
+```
+
+
+## Echantillonnage avec 1000 scénarios par paramètres
+
+```{r}
+
+fast1000 <- fast99(model=NULL,
+                  factors=nom,
+                  n=1000,
+                  q=rep("qunif",15),
+                  q.arg=borne_para_unif)
+
+
+# Stock des paramètres échantillonnés
+
+param_fast_1000 <- fast1000$X
+
+  
+graphs = list()
+
+for (i in nom){
+  plooot <- ggplot(param_fast_1000, aes_string(y = i, x =   1:nrow(param_fast_1000)))+
+    xlab("Indice")+
+    geom_point()+
+    theme_classic()
+  graphs[which(nom==i)] <- list(plooot) 
+  }
+
+names(graphs) <- nom
+
+
+ggarrange(plotlist = graphs, ncol = 3)
+
+
+```
+
+## Comparaison et discussion des deux échantillonnages
+
+L'échantillonnage avec 100 scénario par paramètre présente moins de valeurs intermédiaires pour chaque paramètre que l'échantillonnage à 1000 scénarios. L'échantillonnage à 1000 scénarios est plus précis et parcimonieux. Il est à privilégier dans le cas où la puissance de calcul est suffisante. 
+
+## Lancement du modèle sur ces deux échantillonnages
+
+
+```{r, cache=TRUE}
+# Lancement du modèle avec les 100 scénarios
+
+noms_sorties = c("sortie_1", 
+         "sortie_2",
+         "sortie_3",
+         "sortie_4")
+
+
+sorties_100 <- modAppli(parametre = param_fast_100)
+colnames(sorties_100) <- noms_sorties
+sorties_100 <- as.data.frame(sorties_100)
+
+kable(head(sorties_100))
+
+# Lancement du modèle avec les 1000 scénarios
+
+sorties_1000 <- modAppli(parametre = param_fast_1000)
+colnames(sorties_1000) <- noms_sorties
+sorties_1000 <- as.data.frame(sorties_1000)
+
+
+```
+
+## Distribution des sorties obtenues
+
+- Pour 100 échantillonnages :
+```{r}
+
+# histogrammes des sorties pour visualiser leur distribution.
+
+noms_sorties_bis = c("sortie 1", 
+         "sortie 2",
+         "sortie 3",
+         "sortie 4")
+
+list_histo_100 = list()
+
+for (i in noms_sorties) {
+  histo <- histo_sorties(sorties_100, y = i)
+  list_histo_100[[which(noms_sorties==i)]] = histo
+}
+ggarrange(plotlist = list_histo_100, ncol = 2,
+          labels = noms_sorties_bis)
+
+```
+
+- Pour 1000 échantillonnages : 
+
+```{r}
+
+# histogrammes des sorties pour visualiser leur distribution.
+
+noms_sorties_bis = c("sortie 1", 
+         "sortie 2",
+         "sortie 3",
+         "sortie 4")
+
+list_histo_1000 = list()
+
+for (i in noms_sorties) {
+  histo <- histo_sorties(sorties_1000, y = i)
+  list_histo_1000[[which(noms_sorties==i)]] = histo
+}
+
+ggarrange(plotlist = list_histo_1000, ncol = 2,
+          labels = noms_sorties_bis)
+
+```
+Les distributions des sorties issues de l'échantillonnage par méthode FAST avec 1000 scénrios sont graphiquement beaucoup plus conformes à la lois normale. Les indices utilisés ici sont des estimations de variances des espérances conditionnelles (VCE) qui reposent sur l'hypothèse de normalité de la distribution des données (McKay, M. D. (1995)). Il est donc préférable de réaliser ces analyses sur les sorties issues de 1000 échantillonnages par paramètres.
+
+## Indices principaux et d'ordre 2, visualisation graphique des résultats
+
+```{r}
+# stockage fast1000 & fast100
+
+library(patchwork)
+
+# fast100 :
+indices_fast100 = list()
+for (i in 1:4){
+  fast100_bis <- fast100
+  a = tell(fast100_bis, sorties_100[,i])
+  indices_fast100[[i]] <- a
+}
+names(indices_fast100) <- noms_sorties
+
+# fast 1000 :
+
+indices_fast1000 = list()
+for (i in 1:4){
+  fast1000_bis <- fast1000
+  a = tell(fast1000_bis, sorties_1000[,i])
+  indices_fast1000[[i]] <- a
+}
+names(indices_fast1000) <- noms_sorties
+
+
+# Plot fast100
+
+list_bar <- list()
+for (i in 1:4) {
+ p <- histo_results(indices_fast100, noms_sorties[i])
+ list_bar[[i]] = p
+}
+
+(list_bar[[1]] + list_bar[[2]]) / (list_bar[[3]] + list_bar[[4]])
+
+
+# Plot fast1000
+
+
+list_bar <- list()
+for (i in 1:4) {
+ p <- histo_results(indices_fast1000, noms_sorties[i], titre = noms_sorties_bis[i])
+ list_bar[[i]] = p
+}
+
+(list_bar[[1]] + list_bar[[2]]) / (list_bar[[3]] + list_bar[[4]])
+
+
+```
+
+
+## Comparaison des échantillonnages
+
+L'échantillonnage de 1000 scénarios par paramètre permet de détecter une sensibilité des paramètres 
+
+## Interpréation biologique
+
+
+# Discussion
+
+# Scénario
