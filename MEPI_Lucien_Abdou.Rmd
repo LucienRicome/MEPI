@@ -40,9 +40,8 @@ Ce modèle est deterministe parce qu'il est défini par des équations determini
 
 Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie, les taux de guérison, les taux de mortalité, les taux de naissance, etc. …….
 
-## Equations associées **a verifier a la fin**
+## Equations associées 
 
-\begin{align}
 
 Première classe d'âge : FAIRE LES REFERENCES
 
@@ -103,7 +102,7 @@ Au début de la simulation, il y avait un nombre spécifique d'individus dans ch
 Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de chaque scénario de simulation. Les sorties possibles sont:
 - Sortie 1=  pourcentage de la population dans les états de santé latente et infectieux par rapport à la population totale,
 - Sortie 2= Résultat de la fonction de transmission à la fin des deux années
-- Sortie 3 = maximum du nombre d'individu infectieux dans l'état infectieux au fil des deux ans.
+- Sortie 3 = maximum du nombre d'individu dans l'état infectieux au fil des deux ans.
 - Sortie 4 = somme des fonction de transmission au cours de la première année de la simulation
 
 
@@ -581,7 +580,8 @@ names(indices_fast1000) <- noms_sorties
 
 list_bar <- list()
 for (i in 1:4) {
- p <- histo_results(indices_fast100, noms_sorties[i])
+ p <- histo_results(indices_fast100, noms_sorties[i], 
+                    titre = noms_sorties_bis[i])
  list_bar[[i]] = p
 }
 
@@ -605,11 +605,73 @@ for (i in 1:4) {
 
 ## Comparaison des échantillonnages
 
-L'échantillonnage de 1000 scénarios par paramètre permet de détecter une sensibilité des paramètres 
+L'échantillonnage de 1000 scénarios par paramètre présente une plus grande importance des paramètres loss, portee, sr et trans pour les sorties 2 et 4. Pour la sortie, l'échantillonnage de 1000 scénarios par paramètre permet de détecter un effet du paramètre m3. L'échantillonnage de 100 scénario par paramètre présente un plus faible effet principal pour la sortie 1. Les deux échantillonnages présentent des résultats similaires pour la sortie 3.
+Nottons que aucun des deux échantillonnage issu de la méthode FAST ne permet de détecter d'effet d'interaction.
 
-## Interpréation biologique
+## Interprétation biologique
+
+La sortie 1 correspond à la prévalence de la maladie à l'état final des simulations. Cette prévalence est principalement guidée par le coefficient de transmission de la maladie (trans) ainsi que par le temps d'incubation de la maladie (1/loss). La sortie 2 correspond à la valeur de la fonction de transmission de la maladie, ce qui permet de mettre en évidence le caractère épidémique ou endémique de la propagassion de la maladie. Les résultats de l'analyse FAST nous permet de mettre en évidence l'importance du coefficient de transmission et du temps d'incubation de la maladie pour cette sortie. Nottons une sensibilité de cette sortie aux paramètre liés à la natalité des individus.
+La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulations. Le paramètre de transmission est le plus important. Nottons que le coefficient de transmission de la maladie est influant pour l'ensemble des sorties du modèle.
 
 
 # Discussion
 
+
+
 # Scénario
+
+
+
+## Equations
+
+
+
+
+\begin{cases}
+
+A_{S,t+1} = A_{S,t}\times(1-m_1-t_1-trans\times \frac{N_{I,t}}{N}) + loss \times A_{R,t} + max(0 , sr \times portée \times \sum_{i=1}^{4} B_{i, t} \times f_2 + \sum_{i=1}^{4} C_{i, t} \times f_3 \times (1- \frac{N}{K})) \\
+A_{E,t+1} = A_{E,t}\times(1-m_1-t_1-lat) + trans \times A_{1,t} \times  A_{S,t} \times \frac{N_I}{N} \\
+A_{I,t+1} = A_{I,t}\times(1-m_1-t_1-madd - rec - eff) + lat \times A_{E,t} \\
+A_{Q,t+1} = A_{Q,t}\times(1-m_1-t_1-madd - rec) + eff \times A_{I,t} \\
+A_{R,t+1} = A_{R,t}\times(1-m_1-t_1-loss) + rec \times (A_{I,t} +  A_{Q,t})\\
+
+\end{cases}
+
+\begin{cases}
+
+B_{S,t+1} = A_{S,t}\times t_2 + B_{S,t} \times (1-m_2 - t_2 - trans \times \frac{N_{I,t}}{N_t})+ loss \times B_{R,t} \\
+B_{E,t+1} = A_{E,t}\times t_2 + B_{E,t} \times (1-m_2 - t_2 - lat) + trans \times B_{S,t} \times \frac {N_{I,t}}{N_t} \\
+B_{I,t+1} = = A_{I,t}\times t_2 + B_{I,t} \times (1-m_2 - t_2 - madd - rec - eff) + lat \times B_{2,t} \\
+B_{Q,t+1} = A_{Q,t}\times t_2 + B{Q,t}\times(1-m_1-t_2-madd - rec) + eff \times B_{I,t} \\
+B_{R,t+1} = A_{R,t}\times t_2 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times (B_{I,t} +  B_{Q,t}) \\
+
+\end{cases}
+
+
+\begin{cases}
+
+C_{S,t+1} = B_{S,t}\times t_2 + C_{S,t} \times (1-m_3 - trans \times \frac{N_{I,t}}{N_t}) + loss \times C_{R,t} \\
+C_{E,t+1} = B_{E,t}\times t_2 + C_{E,t} \times (1-m_3 - lat) + trans \times C_{S,t} \times \frac {N_{I,t}}{N_t} \\
+C_{I,t+1} = = B_{I,t}\times t_2 + C_{I,t} \times (1-m_3 -  madd - rec - eff) + lat \times C_{2,t} \\
+C_{Q,t+1} = B_{Q,t}\times t_2 + C{Q,t}\times(1-m_1-t_2-madd - rec) + eff \times C_{I,t} \\
+C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times (C_{I,t} +  C_{Q,t}) \\
+
+\end{cases}
+
+## Schéma
+
+![Schéma des transitions scénario](Schéma des transitions scenario.png)
+
+```{r}
+nom_scenar = c("K", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss", "madd", "eff", "seuil"
+)
+
+ValNominale = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.7, 0.0005)
+
+parametres_scena = matrix(data = ValNominale, ncol = 17)
+colnames(parametres_scena) <- nom_scenar
+
+modAppli_scenario(parametres_scena)
+
+```
+
