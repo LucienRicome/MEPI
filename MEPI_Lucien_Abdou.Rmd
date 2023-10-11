@@ -23,9 +23,12 @@ library(ggplot2)
 source("functionModProjet2023.r")
 library(dplyr)
 library(tidyr)
-library(knitr) ; library(kableExtra)
+library(knitr) 
+library(kableExtra)
 library(reactable)
 library(sensitivity)
+library(labelled)
+library(patchwork)
 ```
 
 
@@ -83,8 +86,8 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 ## Hypothèses principales
 - Transmission directe
-- Population en trois classes d'âge
-- Quatres étast liés à la maladie : 1) susceptible, 2) latent, 3) infectieux et 4) retiré
+- Population en trois classes d'âges
+- Quatres états liés à la maladie : 1) susceptible, 2) latent, 3) infectieux et 4) retiré
 - Ce sont uniquement les individus infectés qui peuvent transmettre la maladie;
 - Les individus peuvent perdre leur immunité
 - Transmission de la maladie par fréquence dépendante
@@ -101,7 +104,7 @@ Au début de la simulation, il y avait un nombre spécifique d'individus dans ch
 ## Sorties possibles du modèle ***A CONFIRMER ***
 Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de chaque scénario de simulation. Les sorties possibles sont:
 - Sortie 1=  pourcentage de la population dans les états de santé latente et infectieux par rapport à la population totale,
-- Sortie 2= Résultat de la fonction de transmission à la fin des deux années
+- Sortie 2= résultat de la fonction de transmission à la fin des deux années
 - Sortie 3 = maximum du nombre d'individu dans l'état infectieux au fil des deux ans.
 - Sortie 4 = somme des fonction de transmission au cours de la première année de la simulation
 
@@ -177,12 +180,14 @@ plot_initial(classe = i,
 
 
 
+
+
 # Analyse de sensibilité : OAT
 
-L'analyse de sensibilité "One-at-a-Time" (OAT) est une méthode qui vise à évaluer l'influence des paramètres d'un modèle sur ses résultats de manière individuelle. Cette approche consiste à modifier un paramètre à la fois, tout en maintenant les autres paramètres à leurs valeurs nominales (*ValNominale*), afin de mesurer l'impact de chaque paramètre sur les sortie  du modèle (*modAppli*).
+L'analyse de sensibilité "One-at-a-Time" (OAT) est une méthode qui vise à évaluer l'influence des paramètres d'un modèle sur ses résultats de manière individuelle. Cette approche consiste à modifier un paramètre à la fois, tout en maintenant les autres paramètres à leurs **valeurs nominales**, afin de mesurer l'impact de chaque paramètre sur les sorties du modèle **modAppli**.
 
 ## Choix des variations des paramètres
-Nous avons sélectionné 5 valeurs en dessous et au-dessus des valeurs nominales pour constituer les 10 valeurs pour chacune des 15 paramètres. Nous avons choisi un incrément (voir script ci-dessous) adapté à la grandeur de chaque paramètre.
+Nous avons sélectionné 5 valeurs en dessous et au-dessus des valeurs nominales pour constituer 10 valeurs pour chacune des 15 paramètres. Nous avons choisi un incrément (voir script ci-dessous) adapté à la grandeur de chaque paramètre.
 
 ## Script
 
@@ -199,12 +204,14 @@ increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
 
 all_parametres <- var_para(parametres = parametres, increment = increment)
 
-# Execution fonction oat (source) et stockage des résultats.
+# Execution de la fonction oat qui permet d'appliquer l'AS de type OAT et calculer les indices de sensiilité.
 
+# Création d'un dataframe pour stocker les résultats
 data_E <-
   data.frame(P = character(0), E1 = numeric(0), E2 = numeric(0), E3 = numeric(0), E4 = numeric(0)
-  ) # dataframe de stock vide
+  ) 
 
+# Boucle pour faire passée les 15 parametres
 for (t in 1:15) {
   
   results <- oat(matrices = all_parametres, parametres = t)
@@ -256,14 +263,13 @@ Les paramètres "rec", "loss", "trans", et "lat" exercent une influence prépond
 L'analyse de sensibilité basée sur One-at-a-Time (OAT) ne fournit des informations sur les influences que dans le voisinage des *valeurs nominales* appliquées. De plus, elle ne permet pas de mettre en évidence les *effets des interactions* entre les paramètres. Cette méthode d'analyse de sensibilité n'est pas particulièrement adaptée à notre *modèle non linéaire*, car l'OAT est une approche locale. Dans sa forme la plus simple, elle fournit des *dérivées partielles* du modèle par rapport aux paramètres d'entrée.
 
 
+
+
+
 # Analyse de sensibilité : Moris
-L'analyse de sensibilité de type Morris est une méthode qui sert à évaluer la sensibilité d'un modèle dont chaque entrée du modèle varie sur toute sa gamme de valeurs possibles.
+L'analyse de sensibilité de type Morris est une méthode qui sert à évaluer la sensibilité d'un modèle avec un choix aléatoire de trajectoires.
  
 ```{r Analyse de sensibilité morris}
-
-library(sensitivity)
-
-
 
 all_parametres <- var_para(parametres = parametres, increment = increment)
 sorti_morris <- morris(
@@ -292,10 +298,11 @@ sigma <- apply(sorti_morris$ee, 3, function(M){
 
 mu.star= as.data.frame(mu.star)
 sigma= as.data.frame(sigma)
-row.names(sigma)
 
 
 ```
+
+
 
 ## Figures
 L'analyse de sensibilité "Morris" révèle que la plupart des paramètres ont des effets négligeables, notamment sur la sortie 1. En revanche, pour les sorties 3 et 4, tous les paramètres présentent des effets non linéaires et/ou avec des interactions significatives. De plus, en ce qui concerne la sortie 2, seul le paramètre "loss" montre un effet non linéaire, tandis que tous les autres paramètres ont des effets négligeables.
@@ -355,7 +362,7 @@ title("Sortie 4")
 
 ## Comparaison entre OAT et Moris
 
-En comparant les deux approches, on constate que l'approche OAT se concentre sur des résultats spécifiques, tandis que la méthode Morris offre une perspective plus globale sur les effets des paramètres. Néanmoins, on retrouve des conclusions similaires concernant les paramètres les plus influents, qui sont principalement "loss", "trans", "portée" et "K".
+En comparant les deux approches, on constate que l'approche OAT se concentre sur des résultats avec des objectif qualitative spécifiques à chaque parametres, tandis que la méthode Morris offre une perspective plus globale sur les effets des paramètres. Néanmoins, on retrouve des conclusions similaires concernant les paramètres les plus influents, qui sont principalement "loss", "trans", "portée" et "K".
 
 
 
@@ -372,8 +379,9 @@ Nous avons utilisé le package "sensitivity" (version 1.28.1) pour effectuer une
 
 Cette méthode a un coup $n\timesp$ simulations. Avec $n$ le nombre de scénarios par paramètres et $p$ le nombre de paramètres. Il faut choisir le nombre de simulations en fonction du nombre de paramètres analysés. plus le nombre de paramètres augmente, plus le nombre de simulation devient couteux en terme de temps de calcul.
 
-## Premier échantillonnage avec peu de simulation par paramètre.
 
+
+## Premier échantillonnage avec peu de simulation par paramètre.
 
 
 ```{r Analyse FAST 100 simulations}
@@ -409,6 +417,8 @@ kable(data.frame("nombre de\nsimulations" = nrow(fast100$X),
 ```
 
 L'échantillonnage avec 100 scénarios par paramètres fait 1500 simulations.
+
+
 
 ## Illustration des variations des paramètres obtenues
 
@@ -553,8 +563,6 @@ Les distributions des sorties issues de l'échantillonnage par méthode FAST ave
 
 ```{r}
 # stockage fast1000 & fast100
-
-library(patchwork)
 
 # fast100 :
 indices_fast100 = list()

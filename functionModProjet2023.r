@@ -191,7 +191,7 @@ oat = function(matrices, parametres) {
     
     para = mat[i, parametres] # recuperer la nouvelle valeur du parametres
     
-    dp = para - ligne[1, parametres] # calculer la variation du parametres: Xi - X0
+    dp = para - ligne[1, parametres] # calcule la variation du parametres: Xi - X0
     
     ligne[1, parametres] = para
     
@@ -200,12 +200,12 @@ oat = function(matrices, parametres) {
     resultat = rbind(resultat, res)
     
     
-    # Calculez la sensibilité
+    # Calcule de la sensibilité
     snblt <- (res - resultat[1, ]) / dp
     sensibilite = rbind(sensibilite, snblt)
     
     
-    # Calculez l'élasticité
+    # Calcule de l'élasticité
     X0 = mat[6, parametres]
     Y0 = resultat[1, ]
     rapport = X0 / Y0
@@ -216,14 +216,14 @@ oat = function(matrices, parametres) {
 }
   }
   
-  nom_para = colnames(mat)[parametres]
+  nom_para = colnames(mat)[parametres] # renommer les colonnes
   
   
   return(
     list(
       Parametres = nom_para,
       Resultat = resultat,
-      Sensibilite = sensibilite[-1, ],
+      Sensibilite = sensibilite[-1, ], 
       Elasticite = elasticite[-1, ]
     )
   )
@@ -247,7 +247,7 @@ histo_sorties <- function(data, y, noms = NULL){
 
 
 # Fonction graphique, indices SCE en histogrammes
-library(labelled)
+
 
 histo_results <- function(data, sortie, titre){
   tablo = data.frame( # source : https://rdrr.io/cran/sensitivity/src/R/fast99.R
