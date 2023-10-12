@@ -576,6 +576,7 @@ modAppli_2 <- function(parametre){
     # INITIALISATION
     MAT <- array(0, dim=c(4,5,temps)); # nb indiv par classe d'?ge en ligne (derni?re ligne = pop tot), ?tat de sant? en colonne, pas de temps (dimension 3)
     nvinf <- array(0, dim=c(temps));
+    
     # conditions initiales (la population est ? sa structure d'?quilibre, calcul?e par ailleurs)
     MAT[1,1,1] <- 27; # xx
     MAT[2,1,1] <- 23; # xx
@@ -586,7 +587,8 @@ modAppli_2 <- function(parametre){
     MAT[4,2,1] <- sum(MAT[1:3,2,1]); 
     MAT[4,3,1] <- sum(MAT[1:3,3,1]); 
     MAT[4,4,1] <- sum(MAT[1:3,4,1]);
-    MAT[4,4,1] <- sum(MAT[1:3,5,1]);
+    MAT[4,5,1] <- sum(MAT[1:3,5,1]);
+    
     
     # SIMULATIONS
     # boucle du temps
@@ -594,7 +596,7 @@ modAppli_2 <- function(parametre){
       
           
           #  si mortalite en dessous du seui
-          if (MAT[4,3,t]*madd < seuil*N) { 
+          if (MAT[4,3,t]*madd < seuil*sum(MAT[4,,t])) { 
             
             
           # classe d'?ge xx
@@ -629,19 +631,19 @@ modAppli_2 <- function(parametre){
         N <- sum(MAT[4,,t]);	# taille de la pop en t
         MAT[1,1,t+1] <- MAT[1,1,t]*(1-m1-t1-trans*MAT[4,3,t]/N) + loss*MAT[1,4,t]      + max(0, sr*portee*(sum(MAT[2,,t])*f2 + sum(MAT[3,,t])*f3) * (1 - N/K)); 
         MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
-        MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-eff)  		  + lat*MAT[1,2,t]; 
+        MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-eff -rec)  		  + lat*MAT[1,2,t]; 
         MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-madd-t1-rec) + eff*MAT[1,3,t];
         MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*(MAT[1,3,t] + MAT[1,4,t]); 
         # classe d'?ge xx
         MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,4,t];
         MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
-        MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-eff)		+ lat*MAT[2,2,t];
+        MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-eff -rec)		+ lat*MAT[2,2,t];
         MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m1-madd-t2-rec) + eff*MAT[2,3,t];
         MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*(MAT[2,3,t]+MAT[2,4,t]);
         # classe d'?ge xx
         MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,4,t];
         MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
-        MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-eff)			+ lat*MAT[3,2,t];
+        MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-eff -rec)			+ lat*MAT[3,2,t];
         MAT[3,4,t+1] <- MAT[2,4,t]*t1 + MAT[3,4,t]*(1-m1-madd-rec) + eff*MAT[3,3,t];
         MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*(MAT[3,3,t]+MAT[3,4,t]);
         # calcul des effectifs par ?tat de sant?
@@ -666,13 +668,16 @@ modAppli_2 <- function(parametre){
     # xx
     sortie4 <- sum(nvinf[1:365])
     
+    sortie5 <- data.frame( S= MAT[4,1,1:temps], L =MAT[4,2,1:temps], I= MAT[4,3,1:temps] , Q= MAT[4,4,1:temps] ,R=MAT[4,5,1:temps])
+    
     sorties[i,1] <- sortie1;
     sorties[i,2] <- sortie2;
     sorties[i,3] <- sortie3;
     sorties[i,4] <- sortie4;
     
+    
   }# fin boucle sc?narios AS
-  return(sorties)
+  return(sortie5)
 } # fin fonction du mod?le
 
 
