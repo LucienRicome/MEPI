@@ -628,7 +628,7 @@ La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulat
 
 # Scénario
 
-
+## Documenatation
 
 ## Equations
 
@@ -670,16 +670,141 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 ![Schéma des transitions scénario](Schéma des transitions scenario.png)
 
-```{r}
+## Figures
+```{r, echo=TRUE}
 nom_scenar = c("K", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss", "madd", "eff", "seuil"
 )
 
-ValNominale = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.7, 0.0005)
 
-parametres_scena = matrix(data = ValNominale, ncol = 17)
-colnames(parametres_scena) <- nom_scenar
+par(mfrow=c(1, 2))
 
-modAppli_scenario(parametres_scena)
+# CAS 1  SANS QUARANTAINE
+parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
+                1/100, 0.001, 0.7, 0.0005)
+  
+sorti_scenario=modAppli_scenario(parametre = matrix(parametres_scena, nrow=1),type_sorti = "evolution")
+
+plot(1:temps, sorti_scenario[,1], type = "l", col = "purple", lwd = 2, 
+     xlab = "temps (jours)", ylab = "Effectif", main = "Cas1: Sans quarantaine", ylim=c(0, 100))
+lines(sorti_scenario[,2], col = "orange", lwd = 2)
+lines(sorti_scenario[,3], col = "red", lwd = 2)
+lines(sorti_scenario[,4], col = "blue", lwd = 2)
+lines(sorti_scenario[,5], col = "green", lwd = 2)
+lines(sorti_scenario[,5]+ sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
+legend(x = "topright", legend = c("Susceptibles",
+                                  "Latents", 
+                                  "Infectieux", 
+                                  "Quarantaines",
+                                  "Immunisés",
+                                  "Population totale"), 
+       col = c("purple", "orange", "red", "blue", "green", "black"),lty = 1,
+       cex = 0.5)
+
+
+
+
+  
+  # CAS 2  AVEC QUARANTAINE
+  parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
+                  1/100, 0.005, 0.9, 0.0005)
+  
+  sorti_scenario=modAppli_scenario(parametre = matrix(parametres_scena, nrow=1), type_sorti= "evolution")
+  
+  plot(1:temps, sorti_scenario[,1], type = "l", col = "purple", lwd = 2, 
+       xlab = "temps (jours)", ylab = "Effectif", main = "Cas2: Avec quarantaine", ylim=c(0, 100))
+  lines(sorti_scenario[,2], col = "orange", lwd = 2)
+  lines(sorti_scenario[,3], col = "red", lwd = 2)
+  lines(sorti_scenario[,4], col = "blue", lwd = 2)
+  lines(sorti_scenario[,5], col = "green", lwd = 2)
+  lines(sorti_scenario[,5]+ sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
+  legend(x = "topright", legend = c("Susceptibles",
+                                    "Latents", 
+                                    "Infectieux", 
+                                    "Quarantaines",
+                                    "Immunisés",
+                                    "Population totale"), 
+         col = c("purple", "orange", "red", "blue", "green", "black"),lty = 1,
+         cex = 0.5)
+
 
 ```
+
+## Analyses de sansibilités
+### OAT
+
+
+```{r Analyse de sensibilité OAT}
+
+parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5,     1/20, 1/100, 0.005, 0.9, 0.005)
+
+parametres_scena = matrix(data = parametres_scena, ncol = 17)
+colnames(parametres_scena) <- nom_scenar
+
+# Saisie de la valeur des incréments par paramètre (dans l'ordre du vecteur "nom")
+
+increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
+  0.0003, 0.5, 0.0002, 0.0002, 0.03, 
+  0.01, 0.0005, 0.0005, 0.0001,0.01,0.001
+)
+
+# Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
+
+all_parametres <- var_para(parametres = parametres_scena, increment = increment,nom_para=nom_scenar)
+
+
+# Execution de la fonction oat qui permet d'appliquer l'AS de type OAT et calculer les indices de sensiilité.
+
+# Création d'un dataframe pour stocker les résultats
+data_E <-
+  data.frame(P = character(0), E1 = numeric(0), E2 = numeric(0), E3 = numeric(0), E4 = numeric(0)
+  ) 
+
+# Boucle pour faire passée les 15 parametres
+for (t in 1:17) {
+  
+  results <- oat(matrices = all_parametres, parametres = t,fonction = "modAppli_scenario")
+  
+  # Créez un dataframe avec les résultats pour le paramètre t
+  data_elas <- data.frame(
+    P = as.factor(rep(results$Parametres, 10)),
+    E1 = as.numeric(results$Elasticite[, 1]),
+    E2 = as.numeric(results$Elasticite[, 2]),
+    E3 = as.numeric(results$Elasticite[, 3]),
+    E4 = as.numeric(results$Elasticite[, 4])
+  )
+  
+  # Ajoutez les résultats au dataframe principal
+  data_E <- rbind(data_E, data_elas)
+  
+}
+
+
+```
+
+
+## Figures
+
+```{r}
+# Représentations graphiques de l'élasticité pour chaque paramètre
+
+# Utilisation de abs() à toutes les colonnes numeric 
+data_E1 <- data_E %>%
+  mutate_if(is.numeric, abs)
+
+data_E2 <- data_E1 %>% 
+  pivot_longer(cols = c("E1", "E2", "E3", "E4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données --> ggplot
+
+data_E2$sorties <- as.factor(data_E2$sorties)
+
+data_E2 %>%
+  ggplot(aes(x = P, y = Elasticite))+
+  geom_boxplot() +
+  theme_classic()+
+  facet_wrap(vars(sorties), ncol = 1)
+
+```
+
+
+
+
 
