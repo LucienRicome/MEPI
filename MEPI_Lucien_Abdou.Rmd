@@ -680,7 +680,7 @@ par(mfrow=c(1, 2))
 
 # CAS 1  SANS QUARANTAINE
 parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
-                1/100, 0.001, 0.7, 0.0005)
+                1/100, 0.005, 0, 0)
   
 sorti_scenario=modAppli_scenario(parametre = matrix(parametres_scena, nrow=1),type_sorti = "evolution")
 
@@ -690,7 +690,7 @@ lines(sorti_scenario[,2], col = "orange", lwd = 2)
 lines(sorti_scenario[,3], col = "red", lwd = 2)
 lines(sorti_scenario[,4], col = "blue", lwd = 2)
 lines(sorti_scenario[,5], col = "green", lwd = 2)
-lines(sorti_scenario[,5]+ sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
+lines(sorti_scenario[,5]+ sorti_scenario[,1] + sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
 legend(x = "topright", legend = c("Susceptibles",
                                   "Latents", 
                                   "Infectieux", 
@@ -706,7 +706,7 @@ legend(x = "topright", legend = c("Susceptibles",
   
   # CAS 2  AVEC QUARANTAINE
   parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
-                  1/100, 0.005, 0.9, 0.0005)
+                  1/100, 0.005, 0.9, 0.00005)
   
   sorti_scenario=modAppli_scenario(parametre = matrix(parametres_scena, nrow=1), type_sorti= "evolution")
   
@@ -716,7 +716,7 @@ legend(x = "topright", legend = c("Susceptibles",
   lines(sorti_scenario[,3], col = "red", lwd = 2)
   lines(sorti_scenario[,4], col = "blue", lwd = 2)
   lines(sorti_scenario[,5], col = "green", lwd = 2)
-  lines(sorti_scenario[,5]+ sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
+  lines(sorti_scenario[,5]+ sorti_scenario[,1] +  sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
   legend(x = "topright", legend = c("Susceptibles",
                                     "Latents", 
                                     "Infectieux", 
@@ -782,7 +782,7 @@ for (t in 1:17) {
 ```
 
 
-## Figures
+#### Figures
 
 ```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
@@ -806,5 +806,5 @@ data_E2 %>%
 
 
 
-
+### Morris
 
