@@ -557,7 +557,8 @@ ggarrange(plotlist = list_histo_1000, ncol = 2,
           labels = noms_sorties_bis)
 
 ```
-Les distributions des sorties issues de l'échantillonnage par méthode FAST avec 1000 scénrios sont graphiquement beaucoup plus conformes à la lois normale. Les indices utilisés ici sont des estimations de variances des espérances conditionnelles (VCE) qui reposent sur l'hypothèse de normalité de la distribution des données (McKay, M. D. (1995)). Il est donc préférable de réaliser ces analyses sur les sorties issues de 1000 échantillonnages par paramètres.
+Les distributions des sorties issues de l'échantillonnage par méthode FAST avec 1000 scénrios sont graphiquement beaucoup plus conformes à la lois normale, excépté pour la sortie 3 qui ne présente pas une distribution normale. Les indices utilisés ici sont des estimations de variances des espérances conditionnelles (VCE) qui reposent sur l'hypothèse de normalité de la distribution des données (McKay, M. D. (1995)). Il est préférable de réaliser ces analyses sur les sorties issues de 1000 échantillonnages par paramètres. De plus, la distribution de la sortie 3 n'est pas interprétable.
+
 
 ## Indices principaux et d'ordre 2, visualisation graphique des résultats
 
@@ -629,7 +630,9 @@ La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulat
 # Scénario
 
 ## Documenatation
-Voici notre proposition de modification du modèle : Lorsque la proportion de décès dus à la maladie par rapport à l'effectif total de la population devient trop élevée, tous les individus testés positifs sont dirigés vers le compartiment de la "quarantaine". Ce mécanisme s'enclenche uniquement lorsque le nombre de décès attribuables à la maladie parmi les individus infectés dépasse un certain "seuil" de la population totale. Ainsi, tous les individus infectieux testés positifs sont transférés dans le compartiment de la quarantaine, affichant à la fois des taux de mortalité naturelle (m1) identiques à ceux des autres états de santé et des taux de mortalité liés à la maladie (madd) similaires aux infectieux. Enfin, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).
+
+Voici notre proposition de modification du modèle : Lorsque la proportion de décès dus à la maladie par rapport à l'effectif total de la population devient trop élevée, tous les individus testés positifs sont dirigés vers le compartiment de la "quarantaine". Ce mécanisme s'enclenche uniquement lorsque le nombre de décès attribuables à la maladie parmi les individus infectés dépasse un certain "seuil" de la population totale, suivant :
+$N_{i,t}\times madd < seuil \times N_t$. Ainsi, tous les individus infectieux testés positifs sont transférés dans le compartiment de la quarantaine, affichant à la fois des taux de mortalité naturelle $(m_{1:3})$ identiques à ceux des autres états de santé et des taux de mortalité liés à la maladie (madd) similaires aux infectieux. Enfin, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).
 
 
 ## Equations
@@ -729,10 +732,11 @@ legend(x = "topright", legend = c("Susceptibles",
 ```
 
 ## Analyses de sansibilités
+
 ### OAT
 
 
-```{r Analyse de sensibilité OAT}
+```{r Analyse de sensibilité OAT scena}
 
 parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5,     1/20, 1/100, 0.005, 0.9, 0.005)
 
@@ -807,7 +811,7 @@ data_E2 %>%
 
 ### Morris
 
-```{r Analyse de sensibilité morris}
+```{r Analyse de sensibilité morris scena}
 parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5,     1/20, 1/100, 0.005, 0.9, 0.005)
 
 parametres_scena = matrix(data = parametres_scena, ncol = 17)
@@ -822,7 +826,7 @@ increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
 
 # Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
 
-all_parametres <- var_para(parametres = parametres_scena, increment = increment,nom_para=nom_scenar)
+all_parametres_scena <- var_para(parametres = parametres_scena, increment = increment,nom_para=nom_scenar)
 
 sorti_morris <- morris(
   model = modAppli_scenario,
@@ -833,8 +837,8 @@ sorti_morris <- morris(
     levels = 6,
     grid.jump = 3
   ),
-  binf = all_parametres[1, ], 
-  bsup = all_parametres[11, ] 
+  binf = all_parametres_scena[1, ], 
+  bsup = all_parametres_scena[11, ] 
 )
 
 # Reccuper la sortie de Morris pour les graphique
@@ -913,7 +917,94 @@ title("Sortie 4")
 
 ### FAST
 
+#### Echantillonnage des paramètres par méthode FAST
 
+Un échantillonnage avec 1000 simulations par paramètre est réalisée avec la méthode FAST, en utilisant une loi uniforme.
+
+
+```{r Analyse FAST 100 simulations scena}
+
+## Initialisation des paramètres des lois de probabilité utilisée
+
+
+#Lois uniforme
+borne_para_unif_scena <- apply( cbind(all_parametres_scena[1,],
+                           all_parametres_scena[11,]),
+                     1,
+                     function(x){list(min=x[1],max=x[2])} )
+
+# Calcul pour 1000 simulations 
+
+fast1000_scena <- fast99(model=NULL, 
+                      factors=nom_scenar,
+                      n=1000,
+                      q=rep("qunif",17),
+                      q.arg=borne_para_unif_scena)
+
+param_fast_1000_scena <- fast1000_scena$X
+
+# Présentation du nombre de simulations
+kable(data.frame("nombre de\nsimulations" = nrow(fast1000_scena$X),
+                 "nombre de\nparamètres" = ncol(fast1000_scena$X)),
+      format = "html")
+
+```
+
+Vérification des distributions des sorties issues de cet échantillonnage.
+
+
+```{r}
+# Lancement du modèle pour l'ensemble des paramètres échantillonnés 
+
+sorties_1000_scena <- modAppli_scenario(parametre = param_fast_1000_scena)
+colnames(sorties_1000_scena) <- noms_sorties
+sorties_1000_scena <- as.data.frame(sorties_1000_scena)
+
+
+# histogrammes des sorties pour visualiser leur distribution.
+
+
+list_histo_1000_scena = list()
+
+for (i in noms_sorties) {
+  histo <- histo_sorties(sorties_1000_scena, y = i)
+  list_histo_1000_scena[[which(noms_sorties==i)]] = histo
+}
+ggarrange(plotlist = list_histo_1000_scena, ncol = 2,
+          labels = noms_sorties_bis)
+
+```
+
+La distribution des valeur de la sortie 3 ne suit pas graphiquement la loi normale. Cette sortie n'est pas interprétable avec une analyse de variance (VCE).
+Les distributions des sorties 1, 2 et 4 suivent graphiquement la loi normale. Elles sont interpréatbles avec une analyse de variance (VCE).
+
+```{r}
+
+# stockage fast1000 
+# fast 1000 :
+
+indices_fast1000_scena = list()
+for (i in 1:4){
+  fast1000_bis <- fast1000_scena
+  a = tell(fast1000_bis, sorties_1000_scena[,i])
+  indices_fast1000_scena[[i]] <- a
+}
+names(indices_fast1000_scena) <- noms_sorties
+
+
+# Plot fast1000
+
+
+list_bar <- list()
+for (i in 1:4) {
+ p <- histo_results(indices_fast1000_scena, noms_sorties[i], titre = noms_sorties_bis[i], parametres = param_fast_1000_scena)
+ list_bar[[i]] = p
+}
+
+(list_bar[[1]] + list_bar[[2]]) / (list_bar[[3]] + list_bar[[4]])
+
+
+```
 
 ## Discussion
 

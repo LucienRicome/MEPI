@@ -253,7 +253,7 @@ histo_sorties <- function(data, y, noms = NULL){
 # Fonction graphique, indices SCE en histogrammes
 
 
-histo_results <- function(data, sortie, titre){
+histo_results <- function(data, sortie, parametres, titre){
   tablo = data.frame( # source : https://rdrr.io/cran/sensitivity/src/R/fast99.R
     "Premier_ordre" = data[[sortie]]$D1 / data[[sortie]]$V, 
     "total_order" = 1 - data[[sortie]]$Dt / data[[sortie]]$V - data[[sortie]]$D1 / data[[sortie]]$V,
