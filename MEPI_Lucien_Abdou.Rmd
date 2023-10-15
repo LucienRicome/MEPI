@@ -707,8 +707,7 @@ legend(x = "topright", legend = c("Susceptibles",
 
   
   # CAS 2  AVEC QUARANTAINE
-  parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
-                  1/100, 0.005, 0.9, 0.00005)
+  parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.8, 0.00005)
   
   sorti_scenario=modAppli_scenario_bis(parametre = matrix(parametres_scena, nrow=1))
   
@@ -747,7 +746,7 @@ colnames(parametres_scena) <- nom_scenar
 
 increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
   0.0003, 0.5, 0.0002, 0.0002, 0.03, 
-  0.01, 0.0005, 0.0005, 0.0001,0.01,0.001
+  0.01, 0.0005, 0.0005, 0.0001,0.01,0.0001
 )
 
 # Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
@@ -807,11 +806,14 @@ data_E2 %>%
 
 ```
 
+Les paramètres eff et seuil n'ont significativement influencé les 4 sortie du modèle avec le scénario.
+
 
 
 ### Morris
 
 ```{r Analyse de sensibilité morris scena}
+
 parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5,     1/20, 1/100, 0.005, 0.9, 0.005)
 
 parametres_scena = matrix(data = parametres_scena, ncol = 17)
@@ -821,7 +823,7 @@ colnames(parametres_scena) <- nom_scenar
 
 increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
   0.0003, 0.5, 0.0002, 0.0002, 0.03, 
-  0.01, 0.0005, 0.0005, 0.0001,0.01,0.001
+  0.01, 0.0005, 0.0005, 0.0001,0.01,0.0001
 )
 
 # Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
@@ -876,7 +878,7 @@ par(mfrow=c(2,2))
 
 
 # Sortie 1
-plot(0.1, 0.1, type="n", ylim=c(0, 0.005), xlim=c(0, 0.06), xlab="mu.star", ylab="sigma")
+plot(0.1, 0.1, type="n", ylim=c(0, 0.005), xlim=c(0, 0.07), xlab="mu.star", ylab="sigma")
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,100,0.1), y = c(0,0.1,0.1), col = "orange", border = NA)
@@ -913,6 +915,9 @@ title("Sortie 4")
 
 
 ```
+
+L'analyse de sensibilité de Morris sur le modèle (avec scénario) révèle que tous les paramètres ont des effets négligeables sur les deux premières sorties, tandis que l'inverse est observé pour les sorties 3 et 4. L'introduction des deux nouveaux paramètres (eff et seuil) a donc modifié l'influence des paramètres. On peut également noter que les deux nouveaux paramètres ne se distinguent pas particulièrement parmi l'ensemble des sorties.
+
 
 
 ### FAST
@@ -975,7 +980,7 @@ ggarrange(plotlist = list_histo_1000_scena, ncol = 2,
 
 ```
 
-La distribution des valeur de la sortie 3 ne suit pas graphiquement la loi normale. Cette sortie n'est pas interprétable avec une analyse de variance (VCE).
+La distribution des valeurs de la sortie 3 ne suit pas graphiquement la loi normale. Cette sortie n'est pas interprétable avec une analyse de variance (VCE).
 Les distributions des sorties 1, 2 et 4 suivent graphiquement la loi normale. Elles sont interpréatbles avec une analyse de variance (VCE).
 
 ```{r}
@@ -1008,7 +1013,7 @@ for (i in 1:4) {
 
 ## Discussion
 
-
+En comparaison avec le modèle initial, nous avons constaté que les résultats issus de l'analyse de sansibilité OAT  et morris n'ont pas changé avec le modèle avec le scénario. Cependant, avec la méthode FAST, nous avons trouvé que le parametres seuil à une trés grande influence sur les sorties du modèles.
 
 
 
