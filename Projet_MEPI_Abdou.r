@@ -605,22 +605,26 @@ modAppli_2 <- function(parametre){
           MAT[1,1,t+1] <- MAT[1,1,t]*(1-m1-t1-trans*MAT[4,3,t]/N) + loss*MAT[1,4,t]      + max(0, sr*portee*(sum(MAT[2,,t])*f2 + sum(MAT[3,,t])*f3) * (1 - N/K)); 
           MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
           MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-rec)  		  + lat*MAT[1,2,t]; 
-          MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t]; 
+          MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-madd-t1-rec);
+          MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t] + rec*MAT[1,4,t]; 
           # classe d'?ge xx
           MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,4,t];
           MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
           MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-rec)		+ lat*MAT[2,2,t];
-          MAT[2,4,t+1] <- MAT[1,4,t]*t1	+ MAT[2,4,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t];
+          MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m2-madd-t2-rec) ;
+          MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t] + rec*MAT[2,4,t];
           # classe d'?ge xx
           MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,4,t];
           MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
           MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-rec)			+ lat*MAT[3,2,t];
-          MAT[3,4,t+1] <- MAT[2,4,t]*t2	+ MAT[3,4,t]*(1-m3-loss)			+ rec*MAT[3,3,t];
+          MAT[3,4,t+1] <- MAT[2,4,t]*t2 + MAT[3,4,t]*(1-m3-madd-rec) ;
+          MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*MAT[3,3,t] + rec*MAT[3,4,t];
           # calcul des effectifs par ?tat de sant?
           MAT[4,1,t+1] <- sum(MAT[1:3,1,t+1]); 
           MAT[4,2,t+1] <- sum(MAT[1:3,2,t+1]); 
-          MAT[4,3,t+1] <- sum(MAT[1:3,3,t+1]); 
+          MAT[4,3,t+1] <- sum(MAT[1:3,3,t+1]);
           MAT[4,4,t+1] <- sum(MAT[1:3,4,t+1]);
+          MAT[4,5,t+1] <- sum(MAT[1:3,5,t+1]);
           nvinf[t+1]   <- trans*MAT[4,1,t]*MAT[4,3,t]/N
           
         } 
@@ -633,19 +637,19 @@ modAppli_2 <- function(parametre){
         MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
         MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-eff -rec)  		  + lat*MAT[1,2,t]; 
         MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-madd-t1-rec) + eff*MAT[1,3,t];
-        MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*(MAT[1,3,t] + MAT[1,4,t]); 
+        MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t] + rec*MAT[1,4,t]; 
         # classe d'?ge xx
         MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,4,t];
         MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
         MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-eff -rec)		+ lat*MAT[2,2,t];
-        MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m1-madd-t2-rec) + eff*MAT[2,3,t];
-        MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*(MAT[2,3,t]+MAT[2,4,t]);
+        MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m2-madd-t2-rec) + eff*MAT[2,3,t];
+        MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t]+rec*MAT[2,4,t];
         # classe d'?ge xx
         MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,4,t];
         MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
         MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-eff -rec)			+ lat*MAT[3,2,t];
-        MAT[3,4,t+1] <- MAT[2,4,t]*t1 + MAT[3,4,t]*(1-m1-madd-rec) + eff*MAT[3,3,t];
-        MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*(MAT[3,3,t]+MAT[3,4,t]);
+        MAT[3,4,t+1] <- MAT[2,4,t]*t2 + MAT[3,4,t]*(1-m3-madd-rec) + eff*MAT[3,3,t];
+        MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*MAT[3,3,t]+ rec*MAT[3,4,t];
         # calcul des effectifs par ?tat de sant?
         MAT[4,1,t+1] <- sum(MAT[1:3,1,t+1]); 
         MAT[4,2,t+1] <- sum(MAT[1:3,2,t+1]); 
@@ -684,7 +688,15 @@ modAppli_2 <- function(parametre){
   
   
 ValNominale = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 
-                5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.01, 0.7, 0.0005)
+                5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.1, 0.99, 0.005)
   
-modAppli_2(parametre = matrix(ValNominale, nrow=1))
+a = modAppli_2(parametre = matrix(ValNominale, nrow=1))
+
+plot(a$S, type = "l")
+lines(a$L, col = "orange")
+lines(a$I, col = "red")
+lines(a$Q, col = "grey")
+lines(a$R, col = "green")
+
+
 
