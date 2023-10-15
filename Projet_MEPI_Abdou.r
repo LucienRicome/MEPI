@@ -537,6 +537,7 @@ qunif(p = 0.5,min = 1,max = 4)
 
 # si les individus infectieux atteigne 50% de la pop, les réduire de 50%
 # Modiifcation de la fonctions
+<<<<<<< HEAD
 modAppli_2 <- function(parametre){  
   
   # CONDITIONS DE SIMULATION
@@ -698,5 +699,60 @@ lines(a$I, col = "red")
 lines(a$Q, col = "grey")
 lines(a$R, col = "green")
 
+=======
+
+
+
+  
+par(mfrow=c(1, 2))
+
+# CAS 1  SANS QUARA
+ValNominale = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
+                1/100, 0.001, 0.7, 0.0005)
+  
+sorti_scenario=modAppli_scenario(parametre = matrix(ValNominale, nrow=1))
+
+plot(1:temps, sorti_scenario[,1], type = "l", col = "purple", lwd = 2, 
+     xlab = "temps (jours)", ylab = "Effectif", main = "Cas1: Sans quarantaine", ylim=c(0, 100))
+lines(sorti_scenario[,2], col = "orange", lwd = 2)
+lines(sorti_scenario[,3], col = "red", lwd = 2)
+lines(sorti_scenario[,4], col = "blue", lwd = 2)
+lines(sorti_scenario[,5], col = "green", lwd = 2)
+lines(sorti_scenario[,5]+ sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
+legend(x = "topright", legend = c("Susceptibles",
+                                  "Latents", 
+                                  "Infectieux", 
+                                  "Quarantaines",
+                                  "Immunisés",
+                                  "Population totale"), 
+       col = c("purple", "orange", "red", "blue", "green", "black"),lty = 1,
+       cex = 0.5)
+
+
+
+
+  
+  # CAS 2
+  ValNominale = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
+                  1/100, 0.005, 0.9, 0.0005)
+  
+  sorti_scenario=modAppli_scenario(parametre = matrix(ValNominale, nrow=1))
+  
+  plot(1:temps, sorti_scenario[,1], type = "l", col = "purple", lwd = 2, 
+       xlab = "temps (jours)", ylab = "Effectif", main = "Cas2: Avec quarantaine", ylim=c(0, 100))
+  lines(sorti_scenario[,2], col = "orange", lwd = 2)
+  lines(sorti_scenario[,3], col = "red", lwd = 2)
+  lines(sorti_scenario[,4], col = "blue", lwd = 2)
+  lines(sorti_scenario[,5], col = "green", lwd = 2)
+  lines(sorti_scenario[,5]+ sorti_scenario[,4]+sorti_scenario[,3]+sorti_scenario[,2], lwd = 2)
+  legend(x = "topright", legend = c("Susceptibles",
+                                    "Latents", 
+                                    "Infectieux", 
+                                    "Quarantaines",
+                                    "Immunisés",
+                                    "Population totale"), 
+         col = c("purple", "orange", "red", "blue", "green", "black"),lty = 1,
+         cex = 0.5)
+>>>>>>> 5213f96383ac3a159d92e5adc2c0e73c2a0ee2b3
 
 
