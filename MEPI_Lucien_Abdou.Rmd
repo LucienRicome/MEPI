@@ -257,7 +257,7 @@ data_E2 %>%
 ```
 
 ## Interpretation et limites
-Les paramètres "rec", "loss", "trans", et "lat" exercent une influence prépondérante sur la sortie 1 qui était le pourcentage de la population dans les états de santé latents et infectieux par rapport à la population totale. Pour la sortie 2 qui était le résultat de la fonction de transmission des deux années de suivi, ce sont les paramètres "K" et "loss" qui démontrent la plus grande influence. Quant au maximum de la population dans l'état infectieux au fil des deux ans, ce sont les paramètres "rec", "trans", "K", et "lat" qui se révèlent être les plus significatifs. Enfin, en ce qui concerne la sortie 4 qui était la somme des fonctions de transmission au cours de la première année de la simulation, ce sont les paramètres "K", "loss", et "trans" qui affichent la plus forte influence.
+Les paramètres "rec", "loss", "trans", et "lat" exercent une influence forte sur la sortie 1 qui était le prévalence de la maladie. Pour la sortie 2 qui était le résultat de la fonction de transmission des deux années de suivi, ce sont les paramètres "K" et "loss" qui démontrent la plus grande influence. Quant au maximum de la population dans l'état infectieux au fil des deux ans, ce sont les paramètres "rec", "trans", "K", et "lat" qui se révèlent être les plus significatifs. Enfin, en ce qui concerne la sortie 4 qui était la somme des fonctions de transmission au cours de la première année de la simulation, ce sont les paramètres "K", "loss", et "trans" qui affichent la plus forte influence.
 
 
 L'analyse de sensibilité basée sur One-at-a-Time (OAT) ne fournit des informations sur les influences que dans le voisinage des *valeurs nominales* appliquées. De plus, elle ne permet pas de mettre en évidence les *effets des interactions* entre les paramètres. Cette méthode d'analyse de sensibilité n'est pas particulièrement adaptée à notre *modèle non linéaire*, car l'OAT est une approche locale. Dans sa forme la plus simple, elle fournit des *dérivées partielles* du modèle par rapport aux paramètres d'entrée.
@@ -362,7 +362,7 @@ title("Sortie 4")
 
 ## Comparaison entre OAT et Moris
 
-En comparant les deux approches, on constate que l'approche OAT se concentre sur des résultats avec des objectif qualitative spécifiques à chaque parametres, tandis que la méthode Morris offre une perspective plus globale sur les effets des paramètres. Néanmoins, on retrouve des conclusions similaires concernant les paramètres les plus influents, qui sont principalement "loss", "trans", "portée" et "K".
+En comparant les deux approches, on constate que l'approche OAT se concentre sur des résultats avec des objectif qualitative spécifiques à chaque parametres, tandis que la méthode Morris offre une perspective plus globale sur les effets des paramètres (seule et/ou avec interaction). Néanmoins, on retrouve des conclusions similaires concernant les paramètres les plus influents, qui sont principalement "loss", "trans", "portée" et "K".
 
 
 
@@ -624,7 +624,7 @@ La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulat
 
 
 # Discussion
-
+Les résultats des analyses de sansibilité des trois méthodes (oat, morris et fast) sont globalement similaire. En effet, on constate que les parametres qui ont une grande inluence sur la prévalence de la maladie (sortie 1) ce sont 
 
 
 # Scénario
@@ -672,7 +672,8 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 ![Schéma des transitions scénario](Schéma des transitions scenario.png)
 
-## Figures
+## Figures   ***On pourrait peut être enlever cette partie***
+
 ```{r, echo=TRUE}
 nom_scenar = c("K", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss", "madd", "eff", "seuil"
 )
@@ -785,7 +786,7 @@ for (t in 1:17) {
 
 
 #### Figures OAT
-
+Exploration des figures de l'alasticité (sansibilité rélative) des 17 paramêtres.
 ```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
 
@@ -806,7 +807,7 @@ data_E2 %>%
 
 ```
 
-Les paramètres eff et seuil n'ont significativement influencé les 4 sortie du modèle avec le scénario.
+Les paramètres eff et seuil n'ont significativement influencé les 4 sorties du modèle avec le scénario.
 
 
 
