@@ -187,9 +187,9 @@ plot_initial(classe = i,
 L'analyse de sensibilité "One-at-a-Time" (OAT) est une méthode qui vise à évaluer l'influence des paramètres d'un modèle sur ses résultats de manière individuelle. Cette approche consiste à modifier un paramètre à la fois, tout en maintenant les autres paramètres à leurs **valeurs nominales**, afin de mesurer l'impact de chaque paramètre sur les sorties du modèle **modAppli**.
 
 ## Choix des variations des paramètres
-Nous avons sélectionné 5 valeurs en dessous et au-dessus des valeurs nominales pour constituer 10 valeurs pour chacune des 15 paramètres. Nous avons choisi un incrément (voir script ci-dessous) adapté à la grandeur de chaque paramètre.
+Nous avons sélectionné 5 valeurs en dessous et 5 valeurs au-dessus des valeurs nominales pour constituer 10 valeurs pour chacune des 15 paramètres. Nous avons choisi un incrément (voir script ci-dessous) adapté à la grandeur de chaque paramètre.
 
-## Script
+## Script de l'analyse OAT
 
 ```{r Analyse de sensibilité OAT}
 
@@ -234,8 +234,9 @@ for (t in 1:15) {
 ```
 
 
-## Figures
+## Figures illustrant le comportement du modèle
 Les figures ci-dessous illustent le comportement du modèle concernant les résultats de l'analyse de sansibilité OAT aevc l'indice d'Elasticité (sensibilité relative) pour chacune des quatres sorties du modèle (E1, E2, E3 et E4).
+
 ```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
 
@@ -257,11 +258,10 @@ data_E2 %>%
 ```
 
 ## Interpretation et limites
-Les paramètres "rec", "loss", "trans", et "lat" exercent une influence forte sur la sortie 1 qui était le prévalence de la maladie. Pour la sortie 2 qui était le résultat de la fonction de transmission des deux années de suivi, ce sont les paramètres "K" et "loss" qui démontrent la plus grande influence. Quant au maximum de la population dans l'état infectieux au fil des deux ans, ce sont les paramètres "rec", "trans", "K", et "lat" qui se révèlent être les plus significatifs. Enfin, en ce qui concerne la sortie 4 qui était la somme des fonctions de transmission au cours de la première année de la simulation, ce sont les paramètres "K", "loss", et "trans" qui affichent la plus forte influence.
+Les paramètres "rec", "loss", "trans", et "lat" exercent une influence forte sur la sortie 1 qui était la prévalence de la maladie. Pour la sortie 2 qui était le résultat de la fonction de transmission des deux années de suivi, ce sont les paramètres "K" et "loss" qui démontrent la plus grande influence. Quant au maximum de la population dans l'état infectieux au fil des deux ans, ce sont les paramètres "rec", "trans", "K", et "lat" qui se révèlent être les plus significatifs. Enfin, en ce qui concerne la sortie 4 qui était la somme des fonctions de transmission au cours de la première année de la simulation, ce sont les paramètres "K", "loss", et "trans" qui affichent la plus forte influence.
 
 
-L'analyse de sensibilité basée sur One-at-a-Time (OAT) ne fournit des informations sur les influences que dans le voisinage des *valeurs nominales* appliquées. De plus, elle ne permet pas de mettre en évidence les *effets des interactions* entre les paramètres. Cette méthode d'analyse de sensibilité n'est pas particulièrement adaptée à notre *modèle non linéaire*, car l'OAT est une approche locale. Dans sa forme la plus simple, elle fournit des *dérivées partielles* du modèle par rapport aux paramètres d'entrée.
-
+L'analyse de sensibilité basée sur One-at-a-Time (OAT) ne fournit des informations sur les influences que dans le voisinage des **valeurs nominales** appliquées. De plus, elle ne permet pas de mettre en évidence les **effets des interactions** entre les paramètres. Cette méthode d'analyse de sensibilité n'est pas particulièrement adaptée à notre **modèle non linéaire**, car l'OAT est une approche locale. Dans sa forme la plus simple, elle fournit des **dérivées partielles** du modèle par rapport aux paramètres d'entrée.
 
 
 
@@ -321,7 +321,7 @@ par(mfrow=c(2,2))
 
 
 # Sortie 1
-plot(0.1, 0.1, type="n", ylim=c(0, 0.005), xlim=c(0, 0.06), xlab="mu.star", ylab="sigma")
+plot(0.1, 0.1, type="n", ylim=c(0, 0.006), xlim=c(0, 0.06), xlab="mu.star", ylab="sigma")
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,100,0.1), y = c(0,0.1,0.1), col = "orange", border = NA)
@@ -330,7 +330,7 @@ text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), cex = 1.3, pos = 3)
 title("Sortie 1")
 
 # Sortie 2
-plot(0.1, 0.1, type="n", ylim=c(0, 0.040), xlim=c(0, 0.30), xlab="mu.star", ylab="sigma")
+plot(0.1, 0.1, type="n", ylim=c(0, 0.07), xlim=c(0, 0.30), xlab="mu.star", ylab="sigma")
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,100,0.1), y = c(0,0.01,0.01), col = "orange", border = NA)
@@ -619,20 +619,30 @@ Nottons que aucun des deux échantillonnage issu de la méthode FAST ne permet d
 
 ## Interprétation biologique
 
-La sortie 1 correspond à la prévalence de la maladie à l'état final des simulations. Cette prévalence est principalement guidée par le coefficient de transmission de la maladie (trans) ainsi que par le temps d'incubation de la maladie (1/loss). La sortie 2 correspond à la valeur de la fonction de transmission de la maladie, ce qui permet de mettre en évidence le caractère épidémique ou endémique de la propagassion de la maladie. Les résultats de l'analyse FAST nous permet de mettre en évidence l'importance du coefficient de transmission et du temps d'incubation de la maladie pour cette sortie. Nottons une sensibilité de cette sortie aux paramètre liés à la natalité des individus.
+La sortie 1 correspond à la prévalence de la maladie à l'état final des simulations. Cette prévalence est principalement guidée par le coefficient de transmission de la maladie (trans) ainsi que par le temps d'incubation de la maladie (1/loss). La sortie 2 correspond à la valeur de la fonction de transmission de la maladie, ce qui permet de mettre en évidence le caractère épidémique ou endémique de la propagassion de la maladie ***(J'ai pas bien compris cette phrase, pour moi, La fonction de transmission permet de modéliser comment la maladie se propage dans une population)***. Les résultats de l'analyse FAST nous permet de mettre en évidence l'importance du coefficient de transmission et du temps d'incubation de la maladie pour cette sortie. Nottons une sensibilité de cette sortie aux paramètre liés à la natalité des individus.
 La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulations. Le paramètre de transmission est le plus important. Nottons que le coefficient de transmission de la maladie est influant pour l'ensemble des sorties du modèle.
 
 
 # Discussion
-Les résultats des analyses de sansibilité des trois méthodes (oat, morris et fast) sont globalement similaire. En effet, on constate que les parametres qui ont une grande inluence sur la prévalence de la maladie (sortie 1) ce sont 
+Les résultats des analyses de sansibilité des trois méthodes (oat, morris et fast) sont globalement similaire. 
+En effet, on constate que les parametres qui ont une grande inluence sur la prévalence de la maladie (sortie 1) sont trans, loss et rec. Ce résultat pourrait s'expliqué par le fait que, le paramètre de transmission (trans) augmente la prévalence en favorisant la propagation de la maladie, tandis que les paramètres de récupération (rec) et de perte d'immunité (loss) peuvent réduire la prévalence en accélérant la guérison et en maintenant l'immunité. 
+En ce qui concerne la fonction de transmission (sortie 2), nous avons constaté que les paramètres de transmission et de perte d'immunité sont les plus influents. De plus, les paramètres liés à la natalité (sr et portée) semblent avoir des effets sur la fonction de transmission. Cela pourrait s'expliquer par le fait qu'un taux de survie (sr) et une portée élevés entraînent la production d'un plus grand nombre d'individus, ce qui pourrait augmenter la probabilité de transmission à la génération suivante. Cependant, il est important de noter que cette sortie peut être influencée par plusieurs autres paramètres tels que le taux de contact et la densité de la population, qui ne sont pas pris en compte dans ce modèle. 
+L'analyse de sensibilité de la troisième sortie a révélé des résultats légèrement différents en fonction du type d'analyse effectué. L'OAT a montré que les paramètres "rec" et "trans" sont particulièrement influents, tandis que l'analyse de type Morris a mis en évidence des effets non linéaires et/ou des interactions pour l'ensemble des paramètres concernant cette sortie. Il est également important de souligner que les résultats de l'analyse FAST sur la troisième sortie ne sont pas interprétables en raison de la non-normalité de l'échantillonnage. 
+Sortie 4.....
+
+
+
+
+
+
 
 
 # Scénario
 
 ## Documenatation
 
-Voici notre proposition de modification du modèle : Lorsque la proportion de décès dus à la maladie par rapport à l'effectif total de la population devient trop élevée, tous les individus testés positifs sont dirigés vers le compartiment de la "quarantaine". Ce mécanisme s'enclenche uniquement lorsque le nombre de décès attribuables à la maladie parmi les individus infectés dépasse un certain "seuil" de la population totale, suivant :
-$N_{i,t}\times madd < seuil \times N_t$. Ainsi, tous les individus infectieux testés positifs sont transférés dans le compartiment de la quarantaine, affichant à la fois des taux de mortalité naturelle $(m_{1:3})$ identiques à ceux des autres états de santé et des taux de mortalité liés à la maladie (madd) similaires aux infectieux. Enfin, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).
+Proposition de modification du modèle : Lorsque la proportion de décès dus à la maladie par rapport à l'effectif total de la population devient trop élevée, tous les individus testés positifs sont dirigés vers le compartiment de la "quarantaine". Ce mécanisme s'enclenche uniquement lorsque le nombre de décès attribuables à la maladie parmi les individus infectés dépasse un certain "seuil" de la population totale, défini comme suit :
+$N_{i,t}\times madd < seuil \times N_t$.  Dans ce compartiment quarantaine, les individus présentent à la fois des taux de mortalité naturelle $(m_{1:3})$ identiques à ceux des autres états de santé, ainsi que des taux de mortalité liés à la maladie (madd) similaires à ceux des individus infectieux. De plus, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).
 
 
 ## Equations
@@ -1015,6 +1025,8 @@ for (i in 1:4) {
 ## Discussion
 
 En comparaison avec le modèle initial, nous avons constaté que les résultats issus de l'analyse de sansibilité OAT  et morris n'ont pas changé avec le modèle avec le scénario. Cependant, avec la méthode FAST, nous avons trouvé que le parametres seuil à une trés grande influence sur les sorties du modèles.
+
+
 
 
 
