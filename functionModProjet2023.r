@@ -183,7 +183,12 @@ oat = function(matrices, parametres, fonction ="modAppli") {
   
   mat_nominale <- t(as.matrix(mat[6,], nrow = 1))
   
-  resultat = as.matrix(modAppli(parametre = mat_nominale))
+  if (fonction=="modAppli") { 
+    
+    resultat = as.matrix(modAppli(parametre = mat_nominale))
+  } else{
+    resultat = as.matrix(modAppli_scenario(parametre = mat_nominale))
+  }
   
   # Boucle pour caculer Y pour chaque variation du parametres concernées sachant que les autres sont fixes
   for (i in 1:nrow(mat)) {
@@ -197,7 +202,9 @@ oat = function(matrices, parametres, fonction ="modAppli") {
     ligne[1, parametres] = para
     
     if (fonction=="modAppli") { 
+      
     res = modAppli(parametre = ligne)
+    
     } else{
       res = modAppli_scenario(parametre = ligne)
     }
