@@ -130,7 +130,7 @@ Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de ch
 ## Figures 
 ***Peut être convertir la sorti generale de la fonction sous forme de tableau : colnames(sorties[[1]])***
 
-```{r Figures mod1}
+```{r Figures mod1, cache=TRUE}
 
 # Initialisation des paramètres 
 
@@ -150,7 +150,7 @@ sorties = modAppli(parametre = parametres, sor = "sort")
 
 # Sorties du modèle
 
-colnames(sorties) <- c("Prévalence\ninstant final", "fct de transmission\ninstant final", "Max infectieux", "somme\nfonction de transmission" )
+colnames(sorties) <- c("sortie 1", "sortie 2", "sortie 3", "sortie 4" )
 
 sorties %>%
   kable(format = "html", booktab = TRUE, caption = "Sorties du modèle")
@@ -192,7 +192,7 @@ Nous avons sélectionné 5 valeurs en dessous et 5 valeurs au-dessus des valeurs
 
 ## Script de l'analyse OAT
 
-```{r Analyse de sensibilité OAT}
+```{r Analyse de sensibilité OAT, cache=TRUE}
 
 # Saisie de la valeur des incréments par paramètre (dans l'ordre du vecteur "nom")
 
@@ -270,7 +270,7 @@ L'analyse de sensibilité basée sur One-at-a-Time (OAT) ne fournit des informat
 # Analyse de sensibilité : Moris
 L'analyse de sensibilité de type Morris est une méthode qui sert à évaluer la sensibilité d'un modèle avec un choix aléatoire de trajectoires.
  
-```{r Analyse de sensibilité morris}
+```{r Analyse de sensibilité morris, cache=TRUE}
 
 all_parametres <- var_para(parametres = parametres, increment = increment)
 sorti_morris <- morris(
@@ -306,8 +306,11 @@ sigma= as.data.frame(sigma)
 
 
 ## Figures
+
+
 L'analyse de sensibilité "Morris" révèle que la plupart des paramètres ont des effets négligeables, notamment sur la sortie 1. En revanche, pour les sorties 3 et 4, tous les paramètres présentent des effets non linéaires et/ou avec des interactions significatives. De plus, en ce qui concerne la sortie 2, seul le paramètre "loss" montre un effet non linéaire, tandis que tous les autres paramètres ont des effets négligeables.
 
+L'utilisation des polygones pour déterminer les effets des paramètres dépend du contexe (Morris, 1991).
 
 *Legendes figures*
 - entrées ayant des effets négligeables (en jaune),
@@ -489,7 +492,7 @@ L'échantillonnage avec 100 scénario par paramètre présente moins de valeurs 
 ## Lancement du modèle sur ces deux échantillonnages
 
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, cache=TRUE}
 # Lancement du modèle avec les 100 scénarios
 
 noms_sorties = c("sortie_1", 
@@ -558,6 +561,8 @@ ggarrange(plotlist = list_histo_1000, ncol = 2,
           labels = noms_sorties_bis)
 
 ```
+
+
 Les distributions des sorties issues de l'échantillonnage par méthode FAST avec 1000 scénrios sont graphiquement beaucoup plus conformes à la lois normale, excépté pour la sortie 3 qui ne présente pas une distribution normale. Les indices utilisés ici sont des estimations de variances des espérances conditionnelles (VCE) qui reposent sur l'hypothèse de normalité de la distribution des données (McKay, M. D. (1995)). Il est préférable de réaliser ces analyses sur les sorties issues de 1000 échantillonnages par paramètres. De plus, la distribution de la sortie 3 n'est pas interprétable.
 
 
@@ -622,7 +627,7 @@ Nottons que aucun des deux échantillonnage issu de la méthode FAST ne permet d
 
 ## Interprétation biologique
 
-La sortie 1 correspond à la prévalence de la maladie à l'état final des simulations. Cette prévalence est principalement guidée par le coefficient de transmission de la maladie (trans) ainsi que par le temps d'incubation de la maladie (1/loss). La sortie 2 correspond à la valeur de la fonction de transmission de la maladie, ce qui permet de mettre en évidence le caractère épidémique ou endémique de la propagassion de la maladie ***(J'ai pas bien compris cette phrase, pour moi, La fonction de transmission permet de modéliser comment la maladie se propage dans une population)***. Les résultats de l'analyse FAST nous permet de mettre en évidence l'importance du coefficient de transmission et du temps d'incubation de la maladie pour cette sortie. Nottons une sensibilité de cette sortie aux paramètre liés à la natalité des individus.
+La sortie 1 correspond à la prévalence de la maladie à l'état final des simulations. Cette prévalence est principalement guidée par le coefficient de transmission de la maladie (trans) ainsi que par le temps d'incubation de la maladie (1/loss). La sortie 2 correspond à la valeur de la fonction de transmission de la maladie, ce qui permet de mettre en évidence l'état de la propagassion de la maladie à la fin des deux ans. Les résultats de l'analyse FAST nous permet de mettre en évidence l'importance du coefficient de transmission et du temps d'incubation de la maladie pour cette sortie. Nottons une sensibilité de cette sortie aux paramètre liés à la natalité des individus.
 La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulations. Le paramètre de transmission est le plus important. Nottons que le coefficient de transmission de la maladie est influant pour l'ensemble des sorties du modèle.
 
 
@@ -688,16 +693,15 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 ## Figures   ***On pourrait peut être enlever cette partie***
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache = TRUE}
 nom_scenar = c("K", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss", "madd", "eff", "seuil"
 )
-
 
 par(mfrow=c(1, 2))
 
 # CAS 1  SANS QUARANTAINE
 parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
-                1/100, 0.005, 0, 0)
+                1/100, 0.001, 0, 0)
   
 sorti_scenario=modAppli_scenario_bis(parametre = matrix(parametres_scena, nrow=1))
 
@@ -718,11 +722,17 @@ legend(x = "topright", legend = c("Susceptibles",
        cex = 0.5)
 
 
+sorties = modAppli_scenario(parametre = matrix(parametres_scena, nrow=1)) 
 
+colnames(sorties) <- c("sortie 1", "sortie 2", "sortie 3", "sortie 4" )
+
+sorties %>%
+  kable(format = "html", booktab = TRUE, caption = "Sorties du modèle")
 
   
   # CAS 2  AVEC QUARANTAINE
-  parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.8, 0.00005)
+  parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 
+                1/100, 0.001, 0.8, 0.00005)
   
   sorti_scenario=modAppli_scenario_bis(parametre = matrix(parametres_scena, nrow=1))
   
@@ -742,7 +752,14 @@ legend(x = "topright", legend = c("Susceptibles",
          col = c("purple", "orange", "red", "blue", "green", "black"),lty = 1,
          cex = 0.5)
 
+sorties = modAppli_scenario(parametre = matrix(parametres_scena, nrow=1)) 
 
+colnames(sorties) <- c("sortie 1", "sortie 2", "sortie 3", "sortie 4" )
+
+sorties %>%
+  kable(format = "html", booktab = TRUE, caption = "Sorties du modèle")
+
+  
 ```
 
 ## Analyses de sansibilités
@@ -750,7 +767,7 @@ legend(x = "topright", legend = c("Susceptibles",
 ### OAT
 
 
-```{r Analyse de sensibilité OAT scena}
+```{r Analyse de sensibilité OAT scena, cache=TRUE}
 
   parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.8, 0.00005)
 
@@ -809,7 +826,7 @@ data_E1 <- data_E %>%
   mutate_if(is.numeric, abs)
 
 data_E2 <- data_E1 %>% 
-  pivot_longer(cols = c("E1", "E2", "E3", "E4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données --> ggplot
+  pivot_longer(cols = c("sortie 1", "sortie 2", "sortie 3", "sortie 4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données pour ggplot.
 
 data_E2$sorties <- as.factor(data_E2$sorties)
 
@@ -824,10 +841,9 @@ data_E2 %>%
 Les paramètres "eff" et "seuil" n'ont significativement pas influencés les 4 sorties du modèle avec le scénario.
 
 
-
 ### Morris
 
-```{r Analyse de sensibilité morris scena}
+```{r Analyse de sensibilité morris scena, cache=TRUE}
 
   parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.8, 0.00005)
 
@@ -893,11 +909,7 @@ par(mfrow=c(2,2))
 
 
 # Sortie 1
-<<<<<<< HEAD
 plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol1)+0.1), xlim=c(0, max(mu.star$ycol1)+0.1), xlab="mu.star", ylab="sigma")
-=======
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol1)+0.1), xlim=c(0, 0.07), xlab="mu.star", ylab="sigma")
->>>>>>> c287338260d930e65012a217c1953fdb67b3ef4a
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,100,0.1), y = c(0,0.1,0.1), col = "orange", border = NA)
@@ -906,11 +918,7 @@ text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), cex = 1.3, pos = 3)
 title("Sortie 1")
 
 # Sortie 2
-<<<<<<< HEAD
 plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol2)+0.01), xlim=c(0, max(mu.star$ycol2)+0.01), xlab="mu.star", ylab="sigma")
-=======
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol2)+0.1), xlim=c(0, 0.30), xlab="mu.star", ylab="sigma")
->>>>>>> c287338260d930e65012a217c1953fdb67b3ef4a
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,100,0.1), y = c(0,0.01,0.01), col = "orange", border = NA)
@@ -919,11 +927,7 @@ text(mu.star$ycol2, sigma$ycol2, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 2")
 
 # Sortie 3
-<<<<<<< HEAD
 plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol3)+0.2), xlim=c(0, max(mu.star$ycol3)+1), xlab="mu.star", ylab="sigma")
-=======
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol3)+0.1), xlim=c(0, 12), xlab="mu.star", ylab="sigma")
->>>>>>> c287338260d930e65012a217c1953fdb67b3ef4a
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,900,0.1), y = c(0,0,0.1), col = "orange", border = NA)
@@ -932,11 +936,7 @@ text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 3")
 
 # Sortie 4
-<<<<<<< HEAD
 plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol4)+2), xlim=c(0, max(mu.star$ycol4)+5), xlab="mu.star", ylab="sigma")
-=======
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol1)+1), xlim=c(0, 90), xlab="mu.star", ylab="sigma")
->>>>>>> c287338260d930e65012a217c1953fdb67b3ef4a
 polygon(x = c(0,0,200), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,5000,0), col = "yellow", border = NA)
 polygon(x = c(0.1,5000,0.1), y = c(0,0,0.1), col = "orange", border = NA)
@@ -989,7 +989,7 @@ kable(data.frame("nombre de\nsimulations" = nrow(fast1000_scena$X),
 Vérification des distributions des sorties issues de cet échantillonnage.
 
 
-```{r}
+```{r, cache = TRUE}
 # Lancement du modèle pour l'ensemble des paramètres échantillonnés 
 
 sorties_1000_scena <- modAppli_scenario(parametre = param_fast_1000_scena)
@@ -1011,8 +1011,7 @@ ggarrange(plotlist = list_histo_1000_scena, ncol = 2,
 
 ```
 
-La distribution des valeurs de la sortie 3 ne suit pas graphiquement la loi normale. Cette sortie n'est pas interprétable avec une analyse de variance (VCE).
-Les distributions des sorties 1, 2 et 4 suivent graphiquement la loi normale. Elles sont interpréatbles avec une analyse de variance (VCE).
+Les distributions des échantillonnages des paramètres par la méthode FAST avec 1000 simulations par paramètre ne montrent pas une lois normale. Les indices d'effet principale et d'effet interaction ne sont donc plus interprétables puisque basés sur l'analyse de la variance (VCE). 
 
 ```{r}
 
@@ -1044,11 +1043,9 @@ for (i in 1:4) {
 
 ## Discussion
 
-<<<<<<< HEAD
 En comparaison avec le modèle initial, nous avons constaté que les résultats issus de l'analyse de sansibilité OAT  et morris n'ont pas changé avec le modèle avec le scénario. Cependant, avec la méthode FAST, nous avons trouvé que le parametre seuil à une trés grande influence sur les sorties du modèles. 
-=======
-En comparaison avec le modèle initial, nous avons constaté que les résultats issus de l'analyse de sansibilité OAT et morris n'ont pas changé avec le modèle avec le scénario. Cependant, avec la méthode FAST, nous avons trouvé que le parametres seuil à une trés grande influence sur les sorties du modèles.
->>>>>>> c287338260d930e65012a217c1953fdb67b3ef4a
+
+
 
 
 
