@@ -3,7 +3,7 @@
 ### Le mod?le est ici d?fini sous forme de fonction pour faciliter vos analyses de sensibilit? (AS)
 ### La fonction renvoie les sorties ponctuelles qui sont ? analyser dans l'AS
 
-modAppli <- function(parametre){  
+modAppli <- function(parametre, sor = "sort"){  
   
   # CONDITIONS DE SIMULATION
   temps = 2*365; # nb de pas de temps (en jours)
@@ -87,13 +87,28 @@ modAppli <- function(parametre){
     # xx
     sortie4 <- sum(nvinf[1:365])
     
+    
+    sortie5 <- data.frame( S = MAT[4,1,1:temps], L = MAT[4,2,1:temps],I = MAT[4,3,1:temps] ,R=MAT[4,4,1:temps])
+    sortie6 <- data.frame( S = MAT[1,1,1:temps], L = MAT[1,2,1:temps],I = MAT[1,3,1:temps] ,R=MAT[1,4,1:temps])
+    sortie7 <- data.frame( S = MAT[2,1,1:temps], L = MAT[2,2,1:temps],I = MAT[2,3,1:temps] ,R=MAT[2,4,1:temps])
+    sortie8 <- data.frame( S = MAT[3,1,1:temps], L = MAT[3,2,1:temps],I = MAT[3,3,1:temps] ,R=MAT[3,4,1:temps])
+
+    sortie5 = list(sortie6,sortie7,sortie8,sortie5)
+    
+    
     sorties[i,1] <- sortie1;
     sorties[i,2] <- sortie2;
     sorties[i,3] <- sortie3;
     sorties[i,4] <- sortie4;
     
   }# fin boucle sc?narios AS
-  return(sorties)
+  
+  if (sor == "sort"){
+  return(sorties)}
+  else
+  {
+    return(sortie5)}
+         
 } # fin fonction du mod?le
 
 # END
@@ -107,12 +122,12 @@ modAppli <- function(parametre){
 
 plot_initial = function(classe, titre) { # Faire en ggplot2
   
-  plot(1:temps, predictions[classe,1,], type = "l", col = "purple", cex = 2, 
+  plot(1:temps, predictions[[classe]][,1], type = "l", col = "purple", cex = 2, 
        xlab = "temps (jours)", ylab = "Effectif", main = titre)
-  lines(predictions[classe,2,], col = "orange", cex = 2)
-  lines(predictions[classe,3,], col = "red", cex = 2)
-  lines(predictions[classe,4,], col = "green", cex = 2)
-  lines(predictions[classe,4,]+predictions[classe,3,]+predictions[classe,2,])
+  lines(predictions[[classe]][,2], col = "orange", cex = 2)
+  lines(predictions[[classe]][,3], col = "red", cex = 2)
+  lines(predictions[[classe]][,4], col = "green", cex = 2)
+  lines(predictions[[classe]][,1]+predictions[[classe]][,2]+predictions[[classe]][,3] + predictions[[classe]][,4])
   
     if (classe == 1){
       legend(x = "topright", legend = c("Susceptibles",

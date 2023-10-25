@@ -144,14 +144,15 @@ colnames(parametres) <- nom
 
 # Exécution du modèle
 
-sorties = modAppli_bis(parametre = parametres) 
-predictions = sorties[[2]][[1]]
+predictions = modAppli(parametre = parametres, sor = "prédictions") 
+
+sorties = modAppli(parametre = parametres, sor = "sort") 
 
 # Sorties du modèle
 
-colnames(sorties[[1]]) <- c("Part des \n infectés et latente \n instant final", "fct de transmission\n instant final", "Max infectieux", "somme\nfonction de transmission" )
+colnames(sorties) <- c("Prévalence\ninstant final", "fct de transmission\ninstant final", "Max infectieux", "somme\nfonction de transmission" )
 
-sorties[[1]] %>%
+sorties %>%
   kable(format = "html", booktab = TRUE, caption = "Sorties du modèle")
 
 # Représentations graphiques des prédictions.
@@ -422,7 +423,7 @@ L'échantillonnage avec 100 scénarios par paramètres fait 1500 simulations.
 
 ## Illustration des variations des paramètres obtenues
 
-```{r Echantillonnage avec 1000 scénarios, fig.lenght = 8}
+```{r Echantillonnage avec 100 scénarios, fig.lenght = 8}
 
 # sauvegarde du tableau
 param_fast_100 <- fast100$X
@@ -590,7 +591,8 @@ names(indices_fast1000) <- noms_sorties
 list_bar <- list()
 for (i in 1:4) {
  p <- histo_results(indices_fast100, noms_sorties[i], 
-                    titre = noms_sorties_bis[i])
+                    titre = noms_sorties_bis[i],
+                    parametres = parametres)
  list_bar[[i]] = p
 }
 
@@ -602,7 +604,8 @@ for (i in 1:4) {
 
 list_bar <- list()
 for (i in 1:4) {
- p <- histo_results(indices_fast1000, noms_sorties[i], titre = noms_sorties_bis[i])
+ p <- histo_results(indices_fast1000, noms_sorties[i], titre = noms_sorties_bis[i], 
+                    parametres = parametres)
  list_bar[[i]] = p
 }
 
@@ -624,6 +627,7 @@ La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulat
 
 
 # Discussion
+
 Les résultats des analyses de sansibilité des trois méthodes (oat, morris et fast) sont globalement similaire. 
 En effet, on constate que les parametres qui ont une grande inluence sur la prévalence de la maladie (sortie 1) sont trans, loss et rec. Ce résultat pourrait s'expliqué par le fait que, le paramètre de transmission (trans) augmente la prévalence en favorisant la propagation de la maladie, tandis que les paramètres de récupération (rec) et de perte d'immunité (loss) peuvent réduire la prévalence en accélérant la guérison et en maintenant l'immunité. 
 En ce qui concerne la fonction de transmission (sortie 2), nous avons constaté que les paramètres de transmission et de perte d'immunité sont les plus influents. De plus, les paramètres liés à la natalité (sr et portée) semblent avoir des effets sur la fonction de transmission. Cela pourrait s'expliquer par le fait qu'un taux de survie (sr) et une portée élevés entraînent la production d'un plus grand nombre d'individus, ce qui pourrait augmenter la probabilité de transmission à la génération suivante. Cependant, il est important de noter que cette sortie peut être influencée par plusieurs autres paramètres tels que le taux de contact et la densité de la population, qui ne sont pas pris en compte dans ce modèle. 
@@ -639,7 +643,7 @@ Sortie 4.....
 
 # Scénario
 
-## Documenatation
+## Documentation
 
 Proposition de modification du modèle : Lorsque la proportion de décès dus à la maladie par rapport à l'effectif total de la population devient trop élevée, tous les individus testés positifs sont dirigés vers le compartiment de la "quarantaine". Ce mécanisme s'enclenche uniquement lorsque le nombre de décès attribuables à la maladie parmi les individus infectés dépasse un certain "seuil" de la population totale, défini comme suit :
 $N_{i,t}\times madd < seuil \times N_t$.  Dans ce compartiment quarantaine, les individus présentent à la fois des taux de mortalité naturelle $(m_{1:3})$ identiques à ceux des autres états de santé, ainsi que des taux de mortalité liés à la maladie (madd) similaires à ceux des individus infectieux. De plus, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).
@@ -748,7 +752,7 @@ legend(x = "topright", legend = c("Susceptibles",
 
 ```{r Analyse de sensibilité OAT scena}
 
-parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5,     1/20, 1/100, 0.005, 0.9, 0.005)
+  parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.8, 0.00005)
 
 parametres_scena = matrix(data = parametres_scena, ncol = 17)
 colnames(parametres_scena) <- nom_scenar
@@ -757,7 +761,7 @@ colnames(parametres_scena) <- nom_scenar
 
 increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
   0.0003, 0.5, 0.0002, 0.0002, 0.03, 
-  0.01, 0.0005, 0.0005, 0.0001,0.01,0.0001
+  0.01, 0.0005, 0.0005, 0.0001,0.01,0.00001
 )
 
 # Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
@@ -796,7 +800,7 @@ for (t in 1:17) {
 
 
 #### Figures OAT
-Exploration des figures de l'alasticité (sansibilité rélative) des 17 paramêtres.
+Exploration des figures de l'élasticité (sansibilité rélative) des 17 paramêtres.
 ```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
 
@@ -825,7 +829,7 @@ Les paramètres eff et seuil n'ont significativement influencé les 4 sorties du
 
 ```{r Analyse de sensibilité morris scena}
 
-parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5,     1/20, 1/100, 0.005, 0.9, 0.005)
+  parametres_scena = c(100, 0.5, 0.0014, 0.00029, 0.0019, 0.0019, 0.0082, 5, 1/365, 1/365, 0.3, 1/5, 1/20, 1/100, 0.001, 0.8, 0.00005)
 
 parametres_scena = matrix(data = parametres_scena, ncol = 17)
 colnames(parametres_scena) <- nom_scenar
@@ -834,7 +838,7 @@ colnames(parametres_scena) <- nom_scenar
 
 increment = c(1, 0.05, 0.0001, 0.00001, 0.0002, 0.0002,
   0.0003, 0.5, 0.0002, 0.0002, 0.03, 
-  0.01, 0.0005, 0.0005, 0.0001,0.01,0.0001
+  0.01, 0.0005, 0.0005, 0.0001,0.01,0.00001
 )
 
 # Execution de la fonction "var_para" qui permet d'appliquer l'incrémentation à chaque paramètre.
@@ -889,7 +893,7 @@ par(mfrow=c(2,2))
 
 
 # Sortie 1
-plot(0.1, 0.1, type="n", ylim=c(0, 0.005), xlim=c(0, 0.07), xlab="mu.star", ylab="sigma")
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol1)+0.1), xlim=c(0, max(mu.star$ycol1)+0.1), xlab="mu.star", ylab="sigma")
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,100,0.1), y = c(0,0.1,0.1), col = "orange", border = NA)
@@ -898,7 +902,7 @@ text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), cex = 1.3, pos = 3)
 title("Sortie 1")
 
 # Sortie 2
-plot(0.1, 0.1, type="n", ylim=c(0, 0.040), xlim=c(0, 0.30), xlab="mu.star", ylab="sigma")
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol2)+0.01), xlim=c(0, max(mu.star$ycol2)+0.01), xlab="mu.star", ylab="sigma")
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,100,0.1), y = c(0,0.01,0.01), col = "orange", border = NA)
@@ -907,7 +911,7 @@ text(mu.star$ycol2, sigma$ycol2, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 2")
 
 # Sortie 3
-plot(0.1, 0.1, type="n", ylim=c(0, 1.4), xlim=c(0, 12), xlab="mu.star", ylab="sigma")
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol3)+0.2), xlim=c(0, max(mu.star$ycol3)+1), xlab="mu.star", ylab="sigma")
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
 polygon(x = c(0.1,900,0.1), y = c(0,0,0.1), col = "orange", border = NA)
@@ -916,7 +920,7 @@ text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 3")
 
 # Sortie 4
-plot(0.1, 0.1, type="n", ylim=c(0, 12), xlim=c(0, 90), xlab="mu.star", ylab="sigma")
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol4)+2), xlim=c(0, max(mu.star$ycol4)+5), xlab="mu.star", ylab="sigma")
 polygon(x = c(0,0,200), y = c(0,100,0), col = "skyblue", border = NA)
 polygon(x = c(0,0,0.1), y = c(0,5000,0), col = "yellow", border = NA)
 polygon(x = c(0.1,5000,0.1), y = c(0,0,0.1), col = "orange", border = NA)
@@ -938,7 +942,7 @@ L'analyse de sensibilité de Morris sur le modèle (avec scénario) révèle que
 Un échantillonnage avec 1000 simulations par paramètre est réalisée avec la méthode FAST, en utilisant une loi uniforme.
 
 
-```{r Analyse FAST 100 simulations scena}
+```{r}
 
 ## Initialisation des paramètres des lois de probabilité utilisée
 
@@ -1024,7 +1028,7 @@ for (i in 1:4) {
 
 ## Discussion
 
-En comparaison avec le modèle initial, nous avons constaté que les résultats issus de l'analyse de sansibilité OAT  et morris n'ont pas changé avec le modèle avec le scénario. Cependant, avec la méthode FAST, nous avons trouvé que le parametres seuil à une trés grande influence sur les sorties du modèles.
+En comparaison avec le modèle initial, nous avons constaté que les résultats issus de l'analyse de sansibilité OAT  et morris n'ont pas changé avec le modèle avec le scénario. Cependant, avec la méthode FAST, nous avons trouvé que le parametre seuil à une trés grande influence sur les sorties du modèles. 
 
 
 
