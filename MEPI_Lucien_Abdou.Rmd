@@ -29,6 +29,7 @@ library(reactable)
 library(sensitivity)
 library(labelled)
 library(patchwork)
+library(ggpubr)
 ```
 
 
@@ -41,12 +42,14 @@ Ce modèle est deterministe parce qu'il est défini par des équations determini
 
 ## Processus biologique
 
-Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie, les taux de guérison, les taux de mortalité, les taux de naissance, etc. …….
+Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie,  les taux de mortalité liés à la maladie ou naturels, le nombre de naissances, les temps d'immunisations et les temps de latence de la maladie.
 
 ## Equations associées 
 
 
-Première classe d'âge : FAIRE LES REFERENCES
+
+
+Première classe d'âge : 
 
 \begin{cases}
 A_{S,t+1} = A_{S,t}\times(1-m_1-t-trans\times \frac{N_{I,t}}{N}) + loss \times A_{R,t} + max(0 , sr \times portée \times \sum_{i=1}^{4} B_{i, t} \times f_2 + \sum_{i=1}^{4} C_{i, t} \times f_3 \times (1- \frac{N}{K})) \\
@@ -78,10 +81,12 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 \end{cases}
 
+Avec $ A_{S,L,I,R}$ : Le nombre d'individu de la première classe d'âge, $ B_{S,L,I,R}$ : Le nombre d'individu de la deuxième classe d'âge, $ C_{S,L,I,R}$ : Le nombre d'individu de la troisème classe  d'âge et $S$ le nombre d'individus susceptibles, $L$ le nombre d'individus latent, $I$ le nombre d'individus infectieux, $R$ le nombre d'individus immunisé (retirés).
 
 ## Schéma des transitions
 
-![Schéma des transitions](Schéma des transitions.png "Schéma des transitions du modèle") 
+On utilise ici comme légende les réponses aux questions 
+![Schéma des transitions](Schéma des transitions nomi.png "Schéma des transitions du modèle") 
 ![Fécondité](Fecondite.png "Schéma des transitions du modèle")
 
 ## Hypothèses principales
@@ -444,7 +449,6 @@ for (i in nom){
 
 names(graphs) <- nom
 
-library(ggpubr)
 
 ggarrange(plotlist = graphs, ncol = 3)
 
@@ -687,7 +691,14 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 \end{cases}
 
-## Schéma
+## Schémas
+
+- Dans le cas où le nombre de morts liés à la maladie est inférieur au seuil : 
+
+![Schéma des transitions scénario condition non respectée](Schéma des transitions scennul.png)
+
+
+- Dans le cas où le nombre de morts liés à la maladie est supérieur au seuil :
 
 ![Schéma des transitions scénario](Schéma des transitions scenario.png)
 
@@ -823,10 +834,14 @@ Exploration des figures de l'élasticité (sansibilité rélative) des 17 param�
 
 # Utilisation de abs() à toutes les colonnes numeric 
 data_E1 <- data_E %>%
-  mutate_if(is.numeric, abs)
+  mutate_if(is.numeric, abs)%>%
+  rename("Sortie 1" = E1,
+         "Sortie 2" = E2,
+         "Sortie 3" = E3,
+         "Sortie 4" = E4)
 
 data_E2 <- data_E1 %>% 
-  pivot_longer(cols = c("sortie 1", "sortie 2", "sortie 3", "sortie 4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données pour ggplot.
+  pivot_longer(cols = c("Sortie 1", "Sortie 2", "Sortie 3", "Sortie 4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données pour ggplot.
 
 data_E2$sorties <- as.factor(data_E2$sorties)
 
