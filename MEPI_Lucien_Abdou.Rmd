@@ -571,7 +571,7 @@ for (i in noms_sorties) {
   histo <- histo_sorties(sorties_100, y = i)
   list_histo_100[[which(noms_sorties==i)]] = histo
 }
-ggarrange(plotlist = list_histo_100, ncol = 2,
+ggarrange(plotlist = list_histo_100, ncol = 2,nrow = 2,
           labels = noms_sorties_bis)
 
 ```
@@ -594,7 +594,7 @@ for (i in noms_sorties) {
   list_histo_1000[[which(noms_sorties==i)]] = histo
 }
 
-ggarrange(plotlist = list_histo_1000, ncol = 2,
+ggarrange(plotlist = list_histo_1000, ncol = 2,nrow = 2,
           labels = noms_sorties_bis)
 
 ```
@@ -677,13 +677,12 @@ La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulat
 
 # Discussion
 
-Les résultats des analyses de sansibilité des trois méthodes (oat, morris et fast) sont globalement similaire. 
+Les résultats des analyses de sensibilité des trois méthodes (oat, morris et fast) sont globalement similaire. 
 En effet, on constate que les parametres qui ont une grande inluence sur la prévalence de la maladie (sortie 1) sont "trans", "loss" et "rec." Ce résultat pourrait s'expliqué par le fait que, le paramètre de transmission (trans) augmente la prévalence en favorisant la propagation de la maladie, tandis que les paramètres de récupération (rec) et de perte d'immunité (loss) peuvent réduire la prévalence en accélérant la guérison et en maintenant l'immunité. 
 En ce qui concerne la fonction de transmission (sortie 2), nous avons constaté que les paramètres de transmission et de perte d'immunité sont les plus influents. De plus, les paramètres liés à la natalité (sr et portée) semblent avoir des effets sur la fonction de transmission. Cela pourrait s'expliquer par le fait qu'un taux de survie (sr) et une portée élevés entraînent la production d'un plus grand nombre d'individus, ce qui pourrait augmenter la probabilité de transmission à la génération suivante. Cependant, il est important de noter que cette sortie peut être influencée par plusieurs autres paramètres tels que le taux de contact et la densité de la population, qui ne sont pas pris en compte dans ce modèle. 
 L'analyse de sensibilité de la troisième sortie a révélé des résultats légèrement différents en fonction du type d'analyse effectué. L'OAT a montré que les paramètres "rec" et "trans" sont particulièrement influents, tandis que l'analyse de type Morris a mis en évidence des effets non linéaires et/ou des interactions pour l'ensemble des paramètres concernant cette sortie. Il est également important de souligner que les résultats de l'analyse FAST sur la troisième sortie ne sont pas interprétables en raison de la non-normalité de l'échantillonnage. 
 Sortie 4.....
-
-
+Les trois méthodes ont permis de déceler des effets de paramètre pour les sorties des modèles mais avec des niveaux de précision différents. L'OAT ne permet pas de déceler les effets interactions 
 
 
 
@@ -705,9 +704,9 @@ Alors les individus testés positifs à la maladie sont mis en quarantaine. \\
 Ici, le paramètre eff correspond à la probabilité qu'un individu infectieux soit testé positif à la maladie. Dans le compartiment quarantaine, les individus présentent à la fois des taux de mortalité naturelle $(m_{1:3})$ identiques à ceux des autres états de santé, ainsi que des taux de mortalité liés à la maladie (madd) similaires à ceux des individus infectieux. De plus, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).\\
 
 
-### Equations différencielles associées
+### Equations associées
 
-Le modèle est définit par les systèmes d'équations d'ifférentielles suivants: 
+Le modèle est définit par les systèmes d'équations suivants: 
 
 1. Dans le cas où aucun individu n'ets mis en quarantaine
 
@@ -727,7 +726,7 @@ A_{R,t+1} = A_{R,t}\times(1-m_1-t_1-loss) + rec \times (A_{I,t} +  A_{Q,t})\\
 B_{S,t+1} = A_{S,t}\times t_2 + B_{S,t} \times (1-m_2 - t_2 - trans \times \frac{N_{I,t}}{N_t})+ loss \times B_{R,t} \times B_{Q,t}\\
 B_{E,t+1} = A_{E,t}\times t_2 + B_{E,t} \times (1-m_2 - t_2 - lat) + trans \times B_{S,t} \times \frac {N_{I,t}}{N_t} \\
 B_{I,t+1} = = A_{I,t}\times t_2 + B_{I,t} \times (1-m_2 - t_2 - madd - rec - eff) + lat \times B_{2,t} \\
-B_{Q,t+1} = A_{Q,t}\times t_2 + B{Q,t}\times(1-m_1-t_2-madd - rec) \\
+B_{Q,t+1} = A_{Q,t}\times t_2 + B_{Q,t}\times(1-m_1-t_2-madd - rec) \\
 B_{R,t+1} = A_{R,t}\times t_2 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times (B_{I,t} +  B_{Q,t}) \\
 
 \end{cases}
@@ -738,14 +737,14 @@ B_{R,t+1} = A_{R,t}\times t_2 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times
 C_{S,t+1} = B_{S,t}\times t_2 + C_{S,t} \times (1-m_3 - trans \times \frac{N_{I,t}}{N_t}) + loss \times C_{R,t} \times C_{Q,t}\\
 C_{E,t+1} = B_{E,t}\times t_2 + C_{E,t} \times (1-m_3 - lat) + trans \times C_{S,t} \times \frac {N_{I,t}}{N_t} \\
 C_{I,t+1} = = B_{I,t}\times t_2 + C_{I,t} \times (1-m_3 -  madd - rec - eff) + lat \times C_{2,t} \\
-C_{Q,t+1} = B_{Q,t}\times t_2 + C{Q,t}\times(1-m_1-t_2-madd - rec) \\
+C_{Q,t+1} = B_{Q,t}\times t_2 + C_{Q,t}\times(1-m_1-t_2-madd - rec) \\
 C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times (C_{I,t} +  C_{Q,t}) \\
 
 \end{cases}
 
 
 
-2. Dans le cas où les individus infectieux testés positifs sont mis en quanrantaine 
+2. Dans le cas où les individus infectieux testés positifs sont mis en quarantaine 
 
 \begin{cases}
 
@@ -762,7 +761,7 @@ A_{R,t+1} = A_{R,t}\times(1-m_1-t_1-loss) + rec \times (A_{I,t} +  A_{Q,t})\\
 B_{S,t+1} = A_{S,t}\times t_2 + B_{S,t} \times (1-m_2 - t_2 - trans \times \frac{N_{I,t}}{N_t})+ loss \times B_{R,t} \\
 B_{E,t+1} = A_{E,t}\times t_2 + B_{E,t} \times (1-m_2 - t_2 - lat) + trans \times B_{S,t} \times \frac {N_{I,t}}{N_t} \\
 B_{I,t+1} = = A_{I,t}\times t_2 + B_{I,t} \times (1-m_2 - t_2 - madd - rec - eff) + lat \times B_{2,t} \\
-B_{Q,t+1} = A_{Q,t}\times t_2 + B{Q,t}\times(1-m_1-t_2-madd - rec) + eff \times B_{I,t} \\
+B_{Q,t+1} = A_{Q,t}\times t_2 + B_{Q,t}\times(1-m_1-t_2-madd - rec) + eff \times B_{I,t} \\
 B_{R,t+1} = A_{R,t}\times t_2 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times (B_{I,t} +  B_{Q,t}) \\
 
 \end{cases}
@@ -773,7 +772,7 @@ B_{R,t+1} = A_{R,t}\times t_2 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times
 C_{S,t+1} = B_{S,t}\times t_2 + C_{S,t} \times (1-m_3 - trans \times \frac{N_{I,t}}{N_t}) + loss \times C_{R,t} \\
 C_{E,t+1} = B_{E,t}\times t_2 + C_{E,t} \times (1-m_3 - lat) + trans \times C_{S,t} \times \frac {N_{I,t}}{N_t} \\
 C_{I,t+1} = = B_{I,t}\times t_2 + C_{I,t} \times (1-m_3 -  madd - rec - eff) + lat \times C_{2,t} \\
-C_{Q,t+1} = B_{Q,t}\times t_2 + C{Q,t}\times(1-m_1-t_2-madd - rec) + eff \times C_{I,t} \\
+C_{Q,t+1} = B_{Q,t}\times t_2 + C_{Q,t}\times(1-m_1-t_2-madd - rec) + eff \times C_{I,t} \\
 C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times (C_{I,t} +  C_{Q,t}) \\
 
 \end{cases}
@@ -865,8 +864,9 @@ sorties %>%
 
   
 ```
-Les quatre sorties issues du scénario présentent des valeurs bien plus faible qu'en absence de scénario. La quarantaine conditionnelle au nombre de mort à l'instant t a donc bien un effet négatif sur la prévalence, la dynamique de transmission et l'état final de la maladie. 
-
+Les quatre sorties issues du scénario présentent des valeurs bien plus faible qu'en absence de scénario. La quarantaine conditionnelle au nombre de mort à l'instant t a donc bien un effet négatif sur la prévalence, la dynamique de transmission et l'état final de la maladie. Les prédictions issues du scénario montre un nombre d'individus susceptibles asymptotique bien plus élevé que les prédictions du modèle sans scénario. Le nombre d'individus infectés y est plus faible et est suivi par le nombre d'individus en quarantaine. Notons que le pique épidémique a disparu lorsque la quarantaine est déclenchée. Le nombre d'individu retirés asymptotique est plus faible lorsque la quarantaine est déclenchée. 
+L'étape suivante consiste à détecter quels paramètres jouent un rôle important dans la dynamique de propagation de la maladie avec quarantaine afin d'identifier les leviers important sur lesquels il faut être vigilent dans l'application de cette méthode. 
+On réalise alors un panel d'analyse de sensibilité.
 
 ## Analyses de sensibilités
 
@@ -923,7 +923,7 @@ for (t in 1:17) {
 
 
 #### Figures OAT
-Exploration des figures de l'élasticité (sansibilité rélative) des 17 paramêtres.
+Exploration des figures de l'élasticité (sensibilité rélative) des 17 paramêtres.
 ```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
 
@@ -944,11 +944,14 @@ data_E2 %>%
   ggplot(aes(x = P, y = Elasticite))+
   geom_boxplot() +
   theme_classic()+
+  ylim(c(0, 20))+
+  xlab("Paramètres")+
   facet_wrap(vars(sorties), ncol = 1)
 
-```
+``` 
+Selon la méthode OAT, les paramètres K, rec, loss, madd et eff on un effet sur les sorties 1 et 2. Les paramètres trans et lat on en plus un effet sur la sortie 2. La méthode OAT n'a pas détecté d'effet de paramètre pour les sorties 3 et 4.
 
-Les paramètres "eff" et "seuil" n'ont significativement pas influencés les 4 sorties du modèle avec le scénario.
+
 
 
 ### Morris
@@ -1068,8 +1071,9 @@ title("Sortie 4")
 
 
 ```
+La méthode MORRIS nous indique que la majorité des paramètres ont un effet en interaction ou non linéaire sur les sorties 1 et 2. Le paramètre seuil a un effet particulièrement  important sur ces sorties.
+Pour la sortie 3 et 4, ce sont les paramètres madd et seuil qui on un fort effet en interaction ou non linéaire. Notons qu'il y a également le paramètre trans qui a un effet en interaction ou non linéaire sur la sortie 4.
 
-L'analyse de sensibilité de Morris sur le modèle (avec scénario) révèle que tous les paramètres ont des effets négligeables sur les deux premières sorties, tandis que l'inverse est observé pour les sorties 3 et 4. L'introduction des deux nouveaux paramètres (eff et seuil) a donc modifié l'influence des paramètres. On peut également noter que les deux nouveaux paramètres ne se distinguent pas particulièrement parmi l'ensemble des sorties.
 
 
 
@@ -1133,7 +1137,8 @@ ggarrange(plotlist = list_histo_1000_scena, ncol = 2,
 
 ```
 
-Les distributions des échantillonnages des paramètres par la méthode FAST avec 1000 simulations par paramètre ne montrent pas une lois normale. Les indices d'effet principale et d'effet interaction ne sont donc plus interprétables puisque basés sur l'analyse de la variance (VCE). 
+Les distributions des échantillonnages des paramètres par la méthode FAST avec 1000 simulations par paramètre ne montrent pas une lois normale. Les indices d'effets principaux et d'effets interactions ne sont donc plus interprétables puisque basés sur l'analyse de la variance (VCE) (McKay, 1995). On réalise tout de même les réalisations graphiques afin de comparer les résultats avec ceux des autres analyses de sensibilité.
+
 
 ```{r}
 
@@ -1162,10 +1167,17 @@ for (i in 1:4) {
 
 
 ```
+En se basant sur les résultats de cette méthode, on observe un effet de deuxième ordre de tous les paramètres ainsi qu'un effet principal du seuil et de madd sur les sorties 1 et 2. Pour les sorties 3 et 4, ce sont les paramètres madd et seuil qui on un effet principal. Le paramètre trans a également un effet principal sur la sortie 4. Le seuil a un effet principale beaucoup plus élevé sur l'ensemble des sorties du modèle. 
+
 
 ## Discussion
 
-En comparaison avec le modèle initial, nous avons constaté que les résultats issus de l'analyse de sansibilité OAT  et morris n'ont pas changé avec le modèle avec le scénario. Cependant, avec la méthode FAST, nous avons trouvé que le parametre seuil à une trés grande influence sur les sorties du modèles. 
+  Le modèle incluant le scénario a permis de simuler les effets de la mise en place de quarantaine. Selon nos postulats la quarantaine conditionnelle est efficace pour endiguer l'épidémie et limiter la propagation de la maladie au sein de la population. Le pic épidémique a été presque éliminé par rapport aux résultats du modèle sans scénario.
+  
+L'analyse de sensibilité a permis de détecter quels paramètres ont des effets sur les sorties du modèle. Le seuil qui traduit la proportion d'individus morts de la maladie au delà duquel la quarantaine s'enclenche présente de forts effets sur toutes les sorties du modèle. L'efficacité de la quarantaine est donc très sensible au conditions de mise en quarantaine. L'ajout de cette quarantaine semble beaucoup agir en interaction avec l'ensemble des autres paramètres alors que les analyses de sensibilité effectuées lorsque qu'il n'y a pas de quarantaine ne présentait aucune interaction entre les paramètres. Ceci  est certainement du à la condition dépendante du seuil qui modifie la dynamique globale. Le seuil serait alors en interaction avec tous les autres paramètres. 
+Notons que les résultats issus de la méthode FAST sont relativement similaire aux résultats de la méthode MORRIS malgré le fait de la non normalité des sorties. Soit les résultats de MORRIS sont trop imprécis soit le non respect de la normalité des distributions n'a pas été un frein trop important à l'analyse VCE de FAST dans ce cas.
+
+ Cependant, avec la méthode FAST, nous avons trouvé que le parametre seuil à une trés grande influence sur les sorties du modèles. 
 
 
 
