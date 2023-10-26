@@ -332,8 +332,8 @@ sigma= as.data.frame(sigma)
 
 ## Figures
 
-Les figure ci-dessous représente $\sigma$ en fonction de $\mu^*$ pour chaque paramètre.
-L'utilisation des polygones pour déterminer les effets des paramètres dépend du contexte. Les seuils de significativité peuvent être approximés par : $d = SEM$. Avec SEM l'erreur standard telle que : $SEM = \frac{S}{\sqrt{r}}$, avec r le nombre de répétition de l'échantillonnage Morris (Morris, 1991).
+Les figures ci-dessous représentent $\sigma$ en fonction de $\mu^*$ pour chaque paramètre.
+L'utilisation des polygones pour déterminer les effets des paramètres dépend du contexte. Les seuils de significativité peuvent être approximés par : $d = SEM$. Avec $SEM$ l'erreur standard telle que : $SEM = \frac{S}{\sqrt{r}}$, avec r le nombre de répétition de l'échantillonnage Morris (Morris, 1991).
 
 L'analyse de sensibilité "Morris" révèle que la plupart des paramètres ont des effets négligeables. Pour les sorties 1 et 3, le paramètre "trans" est le seul à avoir un effet interactif ou non linéaire. Les paramètres "sr", "portee" et "trans" on un effet non linéaire ou interactif pour les sorties 2 et 4. Notons que la sortie 2 est également dépendante d'un effet non linéaire ou interactif du paramètre "m3".
 
@@ -524,7 +524,7 @@ ggarrange(plotlist = graphs, ncol = 3)
 
 ## Comparaison et discussion des deux échantillonnages
 
-L'échantillonnage avec 100 scénario par paramètre présente moins de valeurs intermédiaires pour chaque paramètre que l'échantillonnage à 1000 scénarios. L'échantillonnage à 1000 scénarios est plus précis et parcimonieux. Il est à privilégier dans le cas où la puissance de calcul est suffisante. 
+L'échantillonnage avec 100 scénario par paramètre présente moins de valeurs intermédiaires pour chaque paramètre que l'échantillonnage à 1000 scénarios. L'échantillonnage à 1000 scénarios est plus précis et parcimonieux. D'après le théorème central limite, les sorties du modèle issues de l'échantillonnage à 1000 simulations par paramètre augmente la probabilité que nos sorties suivent une lois normale. L'échantillonnage à 1000 simulations par paramètre est à privilégier dans le cas où la puissance de calcul est suffisante.
 
 ## Lancement du modèle sur ces deux échantillonnages
 
@@ -605,6 +605,8 @@ Les distributions des sorties issues de l'échantillonnage par méthode FAST ave
 
 ## Indices principaux et d'ordre 2, visualisation graphique des résultats
 
+### Fast 100
+
 ```{r}
 # stockage fast1000 & fast100
 
@@ -640,6 +642,11 @@ for (i in 1:4) {
 
 (list_bar[[1]] + list_bar[[2]]) / (list_bar[[3]] + list_bar[[4]])
 
+```
+
+### FAST 1000 
+
+```{r}
 
 # Plot fast1000
 
@@ -687,9 +694,9 @@ Sortie 4.....
 
 ## Intégration de la quarantaine conditionnelle
 
-On se place dans un contexte de propagation de maladie dans un troupeau de bovins dont la létalité est suffisante pour induire des pertes économiques. L'objectif est de minimiser le nombre de pertes bovines. On teste une méthode de quarantaine qui consiste à isoler les individus testés positifs à la maladies pour qu'ils ne puissent plus participer à l'infection d'autres individus susceptibles. Les individus mis en quarantaines sont modélisés par le nouveau compartiment quarantaine (Q). On suppose que la mise en quarantaine s'enclenche lorsque que le nombre de morts bovins lié à la maladie exède une certaine proportion de l'effectif total de la population. On défini la condition suivante : \\
-si
-$$ \ N_{I,t}\times madd < seuil \times N_t $$
+On se place dans un contexte de propagation de maladie dans un troupeau de bovins dont la létalité est suffisante pour induire des pertes économiques. L'objectif est de minimiser le nombre de pertes bovines. On teste une méthode de quarantaine qui consiste à isoler les individus testés positifs à la maladies pour qu'ils ne puissent plus participer à l'infection d'autres individus susceptibles. Les individus mis en quarantaines sont modélisés par le nouveau compartiment quarantaine (Q). On suppose que la mise en quarantaine s'enclenche lorsque que le nombre de morts bovins lié à la maladie exède une certaine proportion de l'effectif total de la population. On défini la condition suivante : \
+
+$$si \ N_{I,t}\times madd < seuil \times N_t $$
 Alors aucun individu n'est mis en quarantaine. 
 
 $$et \ si \ N_{I,t}\times madd > seuil \times N_t $$
@@ -704,7 +711,6 @@ Le modèle est définit par les systèmes d'équations d'ifférentielles suivant
 
 1. Dans le cas où aucun individu n'ets mis en quarantaine
 
-2. Dans le cas où les individus testés positifs sont mis en quanrantaine 
 
 \begin{cases}
 
