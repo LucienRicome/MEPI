@@ -42,7 +42,7 @@ Ce modèle est deterministe parce qu'il est défini par des équations determini
 
 ## Processus biologique
 
-Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie,  les taux de mortalité liés à la maladie ou naturels, le nombre de naissances, les temps d'immunisations et les temps de latence de la maladie.
+Le modèle simule la propagation d'une maladie dans une population en fonction de divers processus biologiques, tels que la transmission de la maladie,  les taux de mortalité liés à la maladie ou naturels, la natalité, les temps d'immunisation et les temps de latence de la maladie.
 
 ## Equations associées 
 
@@ -81,7 +81,7 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 \end{cases}
 
-Avec $ A_{S,L,I,R}$ : Le nombre d'individu de la première classe d'âge, $ B_{S,L,I,R}$ : Le nombre d'individu de la deuxième classe d'âge, $ C_{S,L,I,R}$ : Le nombre d'individu de la troisème classe  d'âge et $S$ le nombre d'individus susceptibles, $L$ le nombre d'individus latent, $I$ le nombre d'individus infectieux, $R$ le nombre d'individus immunisé (retirés).
+Avec $A_{S,L,I,R}$ : Le nombre d'individu de la première classe d'âge, $B_{S,L,I,R}$ : Le nombre d'individu de la deuxième classe d'âge, $C_{S,L,I,R}$ : Le nombre d'individu de la troisème classe  d'âge et $S$ le nombre d'individus susceptibles, $L$ le nombre d'individus latent, $I$ le nombre d'individus infectieux, $R$ le nombre d'individus immunisé (retirés).
 
 ## Schéma des transitions
 
@@ -90,28 +90,35 @@ On utilise ici comme légende les réponses aux questions
 ![Fécondité](Fecondite.png "Schéma des transitions du modèle")
 
 ## Hypothèses principales
-- Transmission directe
-- Population en trois classes d'âges
-- Quatres états liés à la maladie : 1) susceptible, 2) latent, 3) infectieux et 4) retiré
-- Ce sont uniquement les individus infectés qui peuvent transmettre la maladie;
-- Les individus peuvent perdre leur immunité
-- Transmission de la maladie par fréquence dépendante
+* Transmission directe de la maladie;
+* Population en trois classes d'âges;
+* Quatres états liés à la maladie :
+    1. Susceptible;
+    2. Latent;
+    3. Infectieux;
+    4. Retiré;
+* Ce sont uniquement les individus infectés qui peuvent transmettre la maladie;
+* Les individus peuvent perdre leur immunité;
+* Transmission de la maladie par fréquence dépendance;
+* Population ouverte (mortalité et natalité);
 
 
 ## Conditions initiales
 Au début de la simulation, il y avait un nombre spécifique d'individus dans chaque classe d'âge et état de santé:
-- il y avait 27 individus dans la première classe d'âge et dans l'état de santé Susceptible
-- il y avait 23 individus dans la deuxième classe d'âge et dans l'état de santé Susceptible
-- il y avait 36 individus dans la troisième classe d'âge et dans l'état de santé Susceptible
-- il y avait 1 individus dans la troisième classe d'âge et dans l'état de santé Infectieux
 
+* Il y a 27 individus dans la première classe d'âge et dans l'état de santé Susceptible,
+* Il y a 23 individus dans la deuxième classe d'âge et dans l'état de santé Susceptible,
+* Il y a 36 individus dans la troisième classe d'âge et dans l'état de santé Susceptible,
+* Il y a 1 individus dans la troisième classe d'âge et dans l'état de santé Infectieux.
+* Les autres compartiments sont vides.
 
-## Sorties possibles du modèle ***A CONFIRMER ***
+## Sorties possibles du modèle 
 Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de chaque scénario de simulation. Les sorties possibles sont:
-- Sortie 1=  pourcentage de la population dans les états de santé latente et infectieux par rapport à la population totale,
-- Sortie 2= résultat de la fonction de transmission à la fin des deux années
-- Sortie 3 = maximum du nombre d'individu dans l'état infectieux au fil des deux ans.
-- Sortie 4 = somme des fonction de transmission au cours de la première année de la simulation
+
+* Sortie 1 : pourcentage de la population dans les états de santé latente et infectieux par rapport à la population totale (prévalence de la maladie à l'état final),
+* Sortie 2 : résultat de la fonction de transmission à l'état final,
+* Sortie 3 : maximum du nombre d'individu dans l'état infectieux au fil des deux ans,
+* Sortie 4 : somme des fonction de transmission au cours de la première année de la simulation.
 
 
 ## Parametres du modèle
@@ -133,7 +140,7 @@ Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de ch
 
 
 ## Figures 
-***Peut être convertir la sorti generale de la fonction sous forme de tableau : colnames(sorties[[1]])***
+
 
 ```{r Figures mod1, cache=TRUE}
 
@@ -184,7 +191,7 @@ plot_initial(classe = i,
 
 ## Interprétation des figures
 
-
+Les prédictions du modèle montrent que les effectifs de la population pour chaque classe d'âge tendent rapidement vers des équilibres asymptotiques. Dans chacun des cas, Le nombre d'individus susceptibles tend vers 0 alors que le nombre d'individus qui sont dans un autre état de santé se stabilise asymptotiquement. Les intervalles de temps pour lesquels les effectifs sont à l'équilibre asymptotiques correspondent à l'état endémique de la propagation de la maladie alors que lorsque les effectifs n'ont pas encore atteint ces équilibres, la propagation de la maladie est à l'état épidémique. L'équilibre des individus immunisés est plus élevé que les autres alors que les équilibres des individus susceptibles et infectieux sont approximativement similaires. Ainsi, à l'état endémique le nombre d'individus immunisés est plus important que le nombre d'indvidus susceptibles ou infectieux. A l'état épidémique de la maladie, le nombre d'invidus susceptibles décroît rapidement. Dans les même instant, le nombre d'individus latents croissent et décroissent rapidement pour tendre vers leur équilibre asymptotique. Ils sont suivis par les individus infectieux, suivis par les individus retirés.
 
 
 
@@ -196,6 +203,8 @@ L'analyse de sensibilité "One-at-a-Time" (OAT) est une méthode qui vise à év
 Nous avons sélectionné 5 valeurs en dessous et 5 valeurs au-dessus des valeurs nominales pour constituer 10 valeurs pour chacune des 15 paramètres. Nous avons choisi un incrément (voir script ci-dessous) adapté à la grandeur de chaque paramètre.
 
 ## Script de l'analyse OAT
+
+Pour visualiser les script, il faut appuyer sur la touche "show", située en bas, à l'extrème droite de ce texte. Les sources des fonctions var_para et oat sont dans le script "functionModProjet2023.r" (fourni avec ce fichier et lancé au début de ce Rmarkdown).
 
 ```{r Analyse de sensibilité OAT, cache=TRUE}
 
@@ -241,17 +250,27 @@ for (t in 1:15) {
 
 
 ## Figures illustrant le comportement du modèle
-Les figures ci-dessous illustent le comportement du modèle concernant les résultats de l'analyse de sansibilité OAT aevc l'indice d'Elasticité (sensibilité relative) pour chacune des quatres sorties du modèle (E1, E2, E3 et E4).
+Les figures ci-dessous illustrent le comportement du modèle concernant les résultats de l'analyse de sansibilité OAT aevc l'indice d'Elasticité (sensibilité relative) tel que : 
+$$S_x= \frac{x}{y}\times\frac{\partial{y}}{\partial{x}}$$
+Avec $x$ les valeurs du paramètre et $y$ les valeurs des sorties.
+
+Nous avons transformé les valeurs d'élasticité par la fonction valeur absolue afin de simplifier le rendu graphique.
+
+Les valeurs absolues de l'élasticité est représentée pour chaque sortie du modèle (Sortie 1, Sortie 2, Sortie 3 et Sortie 4).
 
 ```{r}
 # Représentations graphiques de l'élasticité pour chaque paramètre
 
 # Utilisation de abs() à toutes les colonnes numeric 
 data_E1 <- data_E %>%
-  mutate_if(is.numeric, abs)
+  mutate_if(is.numeric, abs)%>%
+  rename("Sortie 1" = E1,
+         "Sortie 2" = E2,
+         "Sortie 3" = E3,
+         "Sortie 4" = E4)
 
 data_E2 <- data_E1 %>% 
-  pivot_longer(cols = c("E1", "E2", "E3", "E4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données --> ggplot
+  pivot_longer(cols = c("Sortie 1", "Sortie 2", "Sortie 3", "Sortie 4"), names_to = "sorties", values_to = "Elasticite") # pivot pour formater le jeu de données --> ggplot
 
 data_E2$sorties <- as.factor(data_E2$sorties)
 
@@ -259,6 +278,7 @@ data_E2 %>%
   ggplot(aes(x = P, y = Elasticite))+
   geom_boxplot() +
   theme_classic()+
+  xlab("Paramètres")+
   facet_wrap(vars(sorties), ncol = 1)
 
 ```
@@ -312,55 +332,69 @@ sigma= as.data.frame(sigma)
 
 ## Figures
 
+Les figure ci-dessous représente $\sigma$ en fonction de $\mu^*$ pour chaque paramètre.
+L'utilisation des polygones pour déterminer les effets des paramètres dépend du contexte. Les seuils de significativité peuvent être approximés par : $d = SEM$. Avec SEM l'erreur standard telle que : $SEM = \frac{S}{\sqrt{r}}$, avec r le nombre de répétition de l'échantillonnage Morris (Morris, 1991).
 
-L'analyse de sensibilité "Morris" révèle que la plupart des paramètres ont des effets négligeables, notamment sur la sortie 1. En revanche, pour les sorties 3 et 4, tous les paramètres présentent des effets non linéaires et/ou avec des interactions significatives. De plus, en ce qui concerne la sortie 2, seul le paramètre "loss" montre un effet non linéaire, tandis que tous les autres paramètres ont des effets négligeables.
+L'analyse de sensibilité "Morris" révèle que la plupart des paramètres ont des effets négligeables. Pour les sorties 1 et 3, le paramètre "trans" est le seul à avoir un effet interactif ou non linéaire. Les paramètres "sr", "portee" et "trans" on un effet non linéaire ou interactif pour les sorties 2 et 4. Notons que la sortie 2 est également dépendante d'un effet non linéaire ou interactif du paramètre "m3".
 
-L'utilisation des polygones pour déterminer les effets des paramètres dépend du contexe (Morris, 1991).
 
-*Legendes figures*
-- entrées ayant des effets négligeables (en jaune),
-- entrées ayant des effets linéaires et sans interaction (orange),
-- entrées ayant des effets non linéaires et/ou avec interactions (bleu)
+*Legende des figures*
+
+ - entrées ayant des effets négligeables (en jaune),
+ - entrées ayant des effets linéaires et sans interaction (orange),
+ - entrées ayant des effets non linéaires et/ou avec interactions (bleu)
 
 ```{r, fig.height = 6}
 
 # zone de graphique en 2 colonnes et 2 lignes
 par(mfrow=c(2,2))
 
+r = sorti_morris$r # nombre de répétition
 
 
 # Sortie 1
-plot(0.1, 0.1, type="n", ylim=c(0, 0.006), xlim=c(0, 0.06), xlab="mu.star", ylab="sigma")
+
+SEM_1 <- ((sd(mu.star$ycol1) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol1)+0.1), xlim=c(0, max(mu.star$ycol1)+0.1), xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
-polygon(x = c(0.1,100,0.1), y = c(0,0.1,0.1), col = "orange", border = NA)
+polygon(x = c(0,0,SEM_1), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(SEM_1,100,SEM_1), y = c(0,SEM_1,SEM_1), col = "orange", border = NA)
 points(mu.star$ycol1, sigma$ycol1)
 text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), cex = 1.3, pos = 3)
 title("Sortie 1")
 
 # Sortie 2
-plot(0.1, 0.1, type="n", ylim=c(0, 0.07), xlim=c(0, 0.30), xlab="mu.star", ylab="sigma")
+
+SEM_2 <- ((sd(mu.star$ycol2) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol2)+0.1), xlim=c(0, max(mu.star$ycol2)+0.1),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
-polygon(x = c(0.1,100,0.1), y = c(0,0.01,0.01), col = "orange", border = NA)
+polygon(x = c(0,0,SEM_2), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(SEM_2,100,SEM_2), y = c(0,SEM_2,SEM_2), col = "orange", border = NA)
 points(mu.star$ycol2, sigma$ycol2)
 text(mu.star$ycol2, sigma$ycol2, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 2")
 
 # Sortie 3
-plot(0.1, 0.1, type="n", ylim=c(0, 1.4), xlim=c(0, 12), xlab="mu.star", ylab="sigma")
+
+SEM_3 <- ((sd(mu.star$ycol3) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol3)+5), xlim=c(0, max(mu.star$ycol3)+5),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
-polygon(x = c(0.1,900,0.1), y = c(0,0,0.1), col = "orange", border = NA)
+polygon(x = c(0,0,SEM_3), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(SEM_3,900,SEM_3), y = c(0,0,SEM_3), col = "orange", border = NA)
 points(mu.star$ycol3, sigma$ycol3)
 text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 3")
 
 # Sortie 4
-plot(0.1, 0.1, type="n", ylim=c(0, 12), xlim=c(0, 90), xlab="mu.star", ylab="sigma")
-polygon(x = c(0,0,200), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,5000,0), col = "yellow", border = NA)
-polygon(x = c(0.1,5000,0.1), y = c(0,0,0.1), col = "orange", border = NA)
+SEM_4 <- ((sd(mu.star$ycol4) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol4)+10), xlim=c(0, max(mu.star$ycol4)+10),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
+polygon(x = c(0,0,400), y = c(0,300,0), col = "skyblue", border = NA)
+polygon(x = c(0,0,SEM_4), y = c(0,5000,0), col = "yellow", border = NA)
+polygon(x = c(SEM_4,5000,SEM_4), y = c(0,0,SEM_4), col = "orange", border = NA)
 points(mu.star$ycol4, sigma$ycol4)
 text(mu.star$ycol4, sigma$ycol4, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 4")
@@ -371,7 +405,7 @@ title("Sortie 4")
 
 ## Comparaison entre OAT et Moris
 
-En comparant les deux approches, on constate que l'approche OAT se concentre sur des résultats avec des objectif qualitative spécifiques à chaque parametres, tandis que la méthode Morris offre une perspective plus globale sur les effets des paramètres (seule et/ou avec interaction). Néanmoins, on retrouve des conclusions similaires concernant les paramètres les plus influents, qui sont principalement "loss", "trans", "portée" et "K".
+En comparant les deux approches, on constate que l'approche OAT se concentre sur des résultats avec des objectif qualitatifs spécifiques à chaque parametres, tandis que la méthode Morris offre une perspective plus globale sur les types d'effets des paramètres (seule et/ou avec interaction, relation linéaire ou non). La méthode Morris nous apporte un complément d'information par rapport à la méthode OAT. On retrouve des conclusions similaires concernant les paramètres les plus influents "loss", "trans", "portée" et "K". 
 
 
 
@@ -381,12 +415,11 @@ En comparant les deux approches, on constate que l'approche OAT se concentre sur
 
 Nous avons utilisé le package "sensitivity" (version 1.28.1) pour effectuer une analyse de sensibilité du modèle avec la méthode FAST. La fonction utilisée est "fast99" qui implémente la méthode "FAST - étendue" (Saltelli et al. 1999). Les éléments les plus importants pouvant être modulés sont : 
 
-- le modèle analysé
-- le nombre de simulations
-- La loi de probabilité utilisée.
-- Les paramètres de cette loi de probabilité
+* le nombre de simulations
+* La loi de probabilité utilisée.
+* Les paramètres de cette loi de probabilité
 
-Cette méthode a un coup $n\timesp$ simulations. Avec $n$ le nombre de scénarios par paramètres et $p$ le nombre de paramètres. Il faut choisir le nombre de simulations en fonction du nombre de paramètres analysés. plus le nombre de paramètres augmente, plus le nombre de simulation devient couteux en terme de temps de calcul.
+Cette méthode a un coup $n\times p$ simulations. Avec $n$ le nombre de scénarios par paramètres et $p$ le nombre de paramètres. Il faut choisir le nombre de simulations en fonction du nombre de paramètres analysés. plus le nombre de paramètres augmente, plus le nombre de simulation devient couteux en terme de temps de calcul.
 
 
 
@@ -652,13 +685,61 @@ Sortie 4.....
 
 # Scénario
 
-## Documentation
+## Intégration de la quarantaine conditionnelle
 
-Proposition de modification du modèle : Lorsque la proportion de décès dus à la maladie par rapport à l'effectif total de la population devient trop élevée, tous les individus testés positifs sont dirigés vers le compartiment de la "quarantaine". Ce mécanisme s'enclenche uniquement lorsque le nombre de décès attribuables à la maladie parmi les individus infectés dépasse un certain "seuil" de la population totale, défini comme suit :
-$N_{i,t}\times madd < seuil \times N_t$.  Dans ce compartiment quarantaine, les individus présentent à la fois des taux de mortalité naturelle $(m_{1:3})$ identiques à ceux des autres états de santé, ainsi que des taux de mortalité liés à la maladie (madd) similaires à ceux des individus infectieux. De plus, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).
+On se place dans un contexte de propagation de maladie dans un troupeau de bovins dont la létalité est suffisante pour induire des pertes économiques. L'objectif est de minimiser le nombre de pertes bovines. On teste une méthode de quarantaine qui consiste à isoler les individus testés positifs à la maladies pour qu'ils ne puissent plus participer à l'infection d'autres individus susceptibles. Les individus mis en quarantaines sont modélisés par le nouveau compartiment quarantaine (Q). On suppose que la mise en quarantaine s'enclenche lorsque que le nombre de morts bovins lié à la maladie exède une certaine proportion de l'effectif total de la population. On défini la condition suivante : \\
+si
+$$ \ N_{I,t}\times madd < seuil \times N_t $$
+Alors aucun individu n'est mis en quarantaine. 
+
+$$et \ si \ N_{I,t}\times madd > seuil \times N_t $$
+Alors les individus testés positifs à la maladie sont mis en quarantaine. \\
+
+Ici, le paramètre eff correspond à la probabilité qu'un individu infectieux soit testé positif à la maladie. Dans le compartiment quarantaine, les individus présentent à la fois des taux de mortalité naturelle $(m_{1:3})$ identiques à ceux des autres états de santé, ainsi que des taux de mortalité liés à la maladie (madd) similaires à ceux des individus infectieux. De plus, les individus en quarantaine peuvent développer une immunité au bout d'une certaine période (rec).\\
 
 
-## Equations
+### Equations différencielles associées
+
+Le modèle est définit par les systèmes d'équations d'ifférentielles suivants: 
+
+1. Dans le cas où aucun individu n'ets mis en quarantaine
+
+2. Dans le cas où les individus testés positifs sont mis en quanrantaine 
+
+\begin{cases}
+
+A_{S,t+1} = A_{S,t}\times(1-m_1-t_1-trans\times \frac{N_{I,t}}{N}) + loss \times A_{R,t} \times A_{Q,t} + max(0 , sr \times portée \times \sum_{i=1}^{4} B_{i, t} \times f_2 + \sum_{i=1}^{4} C_{i, t} \times f_3 \times (1- \frac{N}{K})) \\
+A_{E,t+1} = A_{E,t}\times(1-m_1-t_1-lat) + trans \times A_{1,t} \times  A_{S,t} \times \frac{N_I}{N} \\
+A_{I,t+1} = A_{I,t}\times(1-m_1-t_1-madd - rec - eff) + lat \times A_{E,t} \\
+A_{Q,t+1} = A_{Q,t}\times(1-m_1-t_1-madd - rec)  \\
+A_{R,t+1} = A_{R,t}\times(1-m_1-t_1-loss) + rec \times (A_{I,t} +  A_{Q,t})\\
+
+\end{cases}
+
+\begin{cases}
+
+B_{S,t+1} = A_{S,t}\times t_2 + B_{S,t} \times (1-m_2 - t_2 - trans \times \frac{N_{I,t}}{N_t})+ loss \times B_{R,t} \times B_{Q,t}\\
+B_{E,t+1} = A_{E,t}\times t_2 + B_{E,t} \times (1-m_2 - t_2 - lat) + trans \times B_{S,t} \times \frac {N_{I,t}}{N_t} \\
+B_{I,t+1} = = A_{I,t}\times t_2 + B_{I,t} \times (1-m_2 - t_2 - madd - rec - eff) + lat \times B_{2,t} \\
+B_{Q,t+1} = A_{Q,t}\times t_2 + B{Q,t}\times(1-m_1-t_2-madd - rec) \\
+B_{R,t+1} = A_{R,t}\times t_2 + B_{R,t} \times (1-m_2 - t_2 - loss) + rec \times (B_{I,t} +  B_{Q,t}) \\
+
+\end{cases}
+
+
+\begin{cases}
+
+C_{S,t+1} = B_{S,t}\times t_2 + C_{S,t} \times (1-m_3 - trans \times \frac{N_{I,t}}{N_t}) + loss \times C_{R,t} \times C_{Q,t}\\
+C_{E,t+1} = B_{E,t}\times t_2 + C_{E,t} \times (1-m_3 - lat) + trans \times C_{S,t} \times \frac {N_{I,t}}{N_t} \\
+C_{I,t+1} = = B_{I,t}\times t_2 + C_{I,t} \times (1-m_3 -  madd - rec - eff) + lat \times C_{2,t} \\
+C_{Q,t+1} = B_{Q,t}\times t_2 + C{Q,t}\times(1-m_1-t_2-madd - rec) \\
+C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times (C_{I,t} +  C_{Q,t}) \\
+
+\end{cases}
+
+
+
+2. Dans le cas où les individus infectieux testés positifs sont mis en quanrantaine 
 
 \begin{cases}
 
@@ -691,9 +772,15 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 \end{cases}
 
-## Schémas
 
-- Dans le cas où le nombre de morts liés à la maladie est inférieur au seuil : 
+
+
+### Schémas des transitions
+
+On peut également présenter ce modèle sous la forme d'un schéma des transitions.
+
+
+1. Dans le cas où le nombre de morts liés à la maladie est inférieur au seuil : 
 
 ![Schéma des transitions scénario condition non respectée](Schéma des transitions scennul.png)
 
@@ -702,7 +789,7 @@ C_{R,t+1} = B_{R,t}\times t_2 + C_{R,t} \times (1-m_3 - t_2 - loss) + rec \times
 
 ![Schéma des transitions scénario](Schéma des transitions scenario.png)
 
-## Figures   ***On pourrait peut être enlever cette partie***
+## Comparaison des deux modèles pour des valeurs de paramètres fixes
 
 ```{r, echo=TRUE, cache = TRUE}
 nom_scenar = c("K", "sr", "m1", "m2", "m3", "f2", "f3", "portee", "t1", "t2", "trans", "lat", "rec", "loss", "madd", "eff", "seuil"
@@ -772,8 +859,10 @@ sorties %>%
 
   
 ```
+Les quatre sorties issues du scénario présentent des valeurs bien plus faible qu'en absence de scénario. La quarantaine conditionnelle au nombre de mort à l'instant t a donc bien un effet négatif sur la prévalence, la dynamique de transmission et l'état final de la maladie. 
 
-## Analyses de sansibilités
+
+## Analyses de sensibilités
 
 ### OAT
 
@@ -924,37 +1013,49 @@ par(mfrow=c(2,2))
 
 
 # Sortie 1
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol1)+0.1), xlim=c(0, max(mu.star$ycol1)+0.1), xlab="mu.star", ylab="sigma")
+
+SEM_1 <- ((sd(mu.star$ycol1) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol1)+0.1), xlim=c(0, max(mu.star$ycol1)+0.1),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
-polygon(x = c(0.1,100,0.1), y = c(0,0.1,0.1), col = "orange", border = NA)
+polygon(x = c(0,0,SEM_1), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(SEM_1,100,SEM_1), y = c(0,SEM_1,SEM_1), col = "orange", border = NA)
 points(mu.star$ycol1, sigma$ycol1)
 text(mu.star$ycol1, sigma$ycol1, labels = row.names(sigma), cex = 1.3, pos = 3)
 title("Sortie 1")
 
 # Sortie 2
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol2)+0.01), xlim=c(0, max(mu.star$ycol2)+0.01), xlab="mu.star", ylab="sigma")
+
+SEM_2 <- ((sd(mu.star$ycol2) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol2)+0.5), xlim=c(0, max(mu.star$ycol2)+0.1),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
-polygon(x = c(0.1,100,0.1), y = c(0,0.01,0.01), col = "orange", border = NA)
+polygon(x = c(0,0,SEM_2), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(SEM_2,100,SEM_2), y = c(0,SEM_2,SEM_2), col = "orange", border = NA)
 points(mu.star$ycol2, sigma$ycol2)
 text(mu.star$ycol2, sigma$ycol2, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 2")
 
 # Sortie 3
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol3)+0.2), xlim=c(0, max(mu.star$ycol3)+1), xlab="mu.star", ylab="sigma")
+
+SEM_3 <- ((sd(mu.star$ycol3) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol3)+5), xlim=c(0, max(mu.star$ycol3)+5),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,100,0), col = "yellow", border = NA)
-polygon(x = c(0.1,900,0.1), y = c(0,0,0.1), col = "orange", border = NA)
+polygon(x = c(0,0,SEM_3), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(SEM_3,900,SEM_3), y = c(0,0,SEM_3), col = "orange", border = NA)
 points(mu.star$ycol3, sigma$ycol3)
 text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 3")
 
 # Sortie 4
-plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol4)+2), xlim=c(0, max(mu.star$ycol4)+5), xlab="mu.star", ylab="sigma")
-polygon(x = c(0,0,200), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,0.1), y = c(0,5000,0), col = "yellow", border = NA)
-polygon(x = c(0.1,5000,0.1), y = c(0,0,0.1), col = "orange", border = NA)
+
+SEM_4 <- ((sd(mu.star$ycol4) / sqrt(r)))
+
+plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol4)+10), xlim=c(0, max(mu.star$ycol4)+10),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
+polygon(x = c(0,0,400), y = c(0,300,0), col = "skyblue", border = NA)
+polygon(x = c(0,0,SEM_4), y = c(0,5000,0), col = "yellow", border = NA)
+polygon(x = c(SEM_4,5000,SEM_4), y = c(0,0,SEM_4), col = "orange", border = NA)
 points(mu.star$ycol4, sigma$ycol4)
 text(mu.star$ycol4, sigma$ycol4, labels = row.names(sigma), pos = 3, cex = 1.3)
 title("Sortie 4")
