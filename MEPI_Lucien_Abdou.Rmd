@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, results = "
 
 ```{r packages}
 library(ggplot2) 
-source("functionModProjet2023.r")
+source("functionModProjet2023.r") # Script des fonction
 library(dplyr)
 library(tidyr)
 library(knitr) 
@@ -124,8 +124,8 @@ Les sorties du modèle sont enregistrées dans la matrice sortie à la fin de ch
 - portee =  5 : Nombre total de descendant par individu
 - t1 = 1/365: Transition de classe de 1 à 2
 - t2 := 1/365: Transition de la classe 2 à 3
-- trans =  0.3 probabilité qu’un individu susceptible devient latent
-- lat = 1/5 : taux de passage de l'état latente à l'état infectieux
+- trans =  0.3 Probabilité qu’un individu susceptible devient latent
+- lat = 1/5 : Taux de passage de l'état latente à l'état infectieux
 - rec =  1/20 : probabilité qu’un individu infecté devient immunisé
 - loss = 1/100 : Probabilité qu’un individu immunisé redevienne susceptible
 - madd = 0.001 : Mortalité causé par la maladie
@@ -169,9 +169,9 @@ titres = c("Classe 1",
 
 par(mfrow = c(2,2))
 
-for (i in 1:4) {
-plot_initial(classe = i, 
-             titre = titres[i])
+for (j in 1:4) {
+plot_initial(classe = j, 
+             titre = titres[j])
 }
 
 
@@ -654,12 +654,10 @@ La sortie 4 correspond au nombre maximal d'individus infectieux lors des simulat
 
 # Discussion
 <p style="text-align: justify;">
-Les résultats des analyses de sensibilité des trois méthodes (oat, morris et fast) sont globalement similaires.
-En effet, on constate que les paramètres qui ont une grande influence sur la prévalence de la maladie (sortie 1) sont "trans", "loss" et "rec". Ce résultat pourrait s'expliquer par le fait que le paramètre de transmission (trans) augmente la prévalence en favorisant la propagation de la maladie, tandis que les paramètres de récupération (rec) et de perte d'immunité (loss) peuvent réduire la prévalence en accélérant la guérison et en maintenant l'immunité.
-En ce qui concerne les sorties liées à la fonction de transmission (sortie 2 et 4), nous avons constaté que les paramètres de transmission et de perte d'immunité sont les plus influents. De plus, les paramètres liés à la natalité (sr et portée) semblent avoir des effets sur les résultats de la fonction de transmission à l’état final. Cela pourrait s'expliquer par le fait qu'un taux de survie (sr) et une portée élevés entraînent la production d'un plus grand nombre d'individus, ce qui pourrait augmenter la probabilité de transmission à la génération suivante. Cependant, il est important de noter que cette sortie peut être influencée par plusieurs autres paramètres tels que le taux de contact et la densité de la population, qui ne sont pas pris en compte dans ce modèle.
-L'analyse de sensibilité de la troisième sortie a révélé des résultats légèrement différents en fonction du type d'analyse effectué. L'OAT a montré que les paramètres "rec" et "trans" sont particulièrement influents, tandis que l'analyse de type Morris a mis en évidence des effets non-linéaires et/ou des interactions pour l'ensemble des paramètres concernant cette sortie. Il est également important de souligner que les résultats de l'analyse FAST sur la troisième sortie ne sont pas interprétables en raison de la non-normalité de l'échantillonnage.
+Les résultats des analyses de sensibilité des trois méthodes (oat, morris et fast) sont globalement similaires.En effet, on constate que les paramètres qui ont une grande influence sur la prévalence de la maladie (sortie 1) sont "trans", "loss" et "rec". Ce résultat pourrait s'expliquer par le fait que le paramètre de transmission (trans) augmente la prévalence en favorisant la propagation de la maladie, tandis que les paramètres de récupération (rec) et de perte d'immunité (loss) peuvent réduire la prévalence en accélérant la guérison et en maintenant l'immunité.En ce qui concerne les sorties liées à la fonction de transmission (sortie 2 et 4), nous avons constaté que les paramètres de transmission et de perte d'immunité sont les plus influents. De plus, les paramètres liés à la natalité (sr et portée) semblent avoir des effets sur les résultats de la fonction de transmission à l’état final. Cela pourrait s'expliquer par le fait qu'un taux de survie (sr) et une portée élevés entraînent la production d'un plus grand nombre d'individus, ce qui pourrait augmenter la probabilité de transmission à la génération suivante. Cependant, il est important de noter que cette sortie peut être influencée par plusieurs autres paramètres tels que le taux de contact et la densité de la population, qui ne sont pas pris en compte dans ce modèle. L'analyse de sensibilité de la troisième sortie a révélé des résultats légèrement différents en fonction du type d'analyse effectué. L'OAT a montré que les paramètres "rec" et "trans" sont particulièrement influents, tandis que l'analyse de type Morris a mis en évidence des effets non-linéaires et/ou des interactions pour l'ensemble des paramètres concernant cette sortie. Il est également important de souligner que les résultats de l'analyse FAST sur la troisième sortie ne sont pas interprétables en raison de la non-normalité de l'échantillonnage.
 Les trois méthodes ont permis de déceler des effets de paramètre pour les sorties des modèles, mais avec des niveaux de précision différents.
 </p>
+
  
 
 # Modification du modèle
@@ -1033,8 +1031,6 @@ data_E2 %>%
 Selon la méthode OAT, les paramètres "K", "rec", "loss", "madd" et "eff" ont une influence plus marquée sur les sorties 1 et 2. De plus, les paramètres "trans" et "lat" ont également un effet sur la sortie 2. En revanche, la méthode OAT n'a pas révélé d'effet de paramètre significatif pour les sorties 3 et 4.
 
 
-
-
 ### Morris
 
 ```{r Analyse de sensibilité morris scena, cache=TRUE}
@@ -1088,9 +1084,9 @@ sigma= as.data.frame(sigma)
 #### Figures 
 
 *Legendes figures*
-- entrées ayant des effets négligeables (en jaune),
-- entrées ayant des effets linéaires et sans interaction (orange),
-- entrées ayant des effets non linéaires et/ou avec interactions (bleu)
+* entrées ayant des effets négligeables (en jaune),
+* entrées ayant des effets linéaires et sans interaction (orange),
+* entrées ayant des effets non linéaires et/ou avec interactions (bleu)
 
 ```{r, fig.height = 6}
 
@@ -1129,7 +1125,7 @@ SEM_3 <- ((sd(mu.star$ycol3) / sqrt(r)))
 
 plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol3)+5), xlim=c(0, max(mu.star$ycol3)+5),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
 polygon(x = c(0,0,100), y = c(0,100,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,SEM_3), y = c(0,100,0), col = "yellow", border = NA)
+polygon(x = c(0,0,SEM_3), y = c(0,800,0), col = "yellow", border = NA)
 polygon(x = c(SEM_3,900,SEM_3), y = c(0,0,SEM_3), col = "orange", border = NA)
 points(mu.star$ycol3, sigma$ycol3)
 text(mu.star$ycol3, sigma$ycol3, labels = row.names(sigma), pos = 3, cex = 1.3)
@@ -1140,8 +1136,8 @@ title("Sortie 3")
 SEM_4 <- ((sd(mu.star$ycol4) / sqrt(r)))
 
 plot(0.1, 0.1, type="n", ylim=c(0, max(sigma$ycol4)+10), xlim=c(0, max(mu.star$ycol4)+10),  xlab=expression(""*mu*"*"), ylab=expression(""*sigma*""))
-polygon(x = c(0,0,400), y = c(0,300,0), col = "skyblue", border = NA)
-polygon(x = c(0,0,SEM_4), y = c(0,5000,0), col = "yellow", border = NA)
+polygon(x = c(0,0,400), y = c(0,400,0), col = "skyblue", border = NA)
+polygon(x = c(0,0,SEM_4), y = c(0,8000,0), col = "yellow", border = NA)
 polygon(x = c(SEM_4,5000,SEM_4), y = c(0,0,SEM_4), col = "orange", border = NA)
 points(mu.star$ycol4, sigma$ycol4)
 text(mu.star$ycol4, sigma$ycol4, labels = row.names(sigma), pos = 3, cex = 1.3)
@@ -1150,8 +1146,11 @@ title("Sortie 4")
 
 ```
 
+<p style="text-align: justify;">
 La méthode MORRIS nous indique que la majorité des paramètres ont un effet en interaction ou non-linéaire sur les sorties 1 et 2. Il convient de noter que le paramètre "seuil" exerce un effet particulièrement marqué sur ces deux sorties.
 Quant aux sorties 3 et 4, ce sont les paramètres "madd" et "seuil" qui se distinguent par leur fort impact, qu'il s'agisse d'interactions ou de non-linéarités. Notons qu'il y a également le paramètre trans qui a un effet en interaction ou non-linéaire sur la sortie 4.
+</p>
+
 
 
 ### FAST
@@ -1248,19 +1247,16 @@ for (i in 1:4) {
 
 <p style="text-align: justify;">
 En se basant sur les résultats de cette méthode, on observe un effet de deuxième ordre de tous les paramètres ainsi qu'un effet principal du "seuil" et de "madd" sur les sorties 1 et 2. Pour les sorties 3 et 4, ce sont les paramètres "madd" et "seuil" qui ont un effet principal. Le paramètre "trans" a également un effet principal sur la sortie 4. Le "seuil" a un effet principal beaucoup plus élevé sur l'ensemble des sorties du modèle. 
-
+</p>
 
 
 ## Discussion
-
-Le modèle modifié a permis de simuler les effets de la mise en place de quarantaine. Selon nos postulats la quarantaine conditionnelle est efficace pour endiguer l'épidémie et limiter la propagation de la maladie au sein de la population. Le pic épidémique a été presque éliminé par rapport aux résultats du modèle de base.
-
-L'analyse de sensibilité a permis de détecter quels paramètres ont des effets sur les sorties du modèle. Le "seuil" qui traduit la proportion d'individus morts de la maladie au delà duquel la quarantaine s'enclenche présente de forts effets sur toutes les sorties du modèle. L'efficacité de la quarantaine est donc très sensible au conditions de mise en quarantaine. L'ajout de cette quarantaine semble beaucoup agir en interaction avec l'ensemble des autres paramètres alors que les analyses de sensibilité effectuées lorsque qu'il n'y a pas de quarantaine ne présentait aucune interaction entre les paramètres. Ceci est certainement du à la condition dépendante du seuil qui modifie la dynamique globale. Le seuil serait alors en interaction avec tous les autres paramètres.
-Notons que les résultats issus de la méthode FAST sont relativement similaire aux résultats de la méthode MORRIS malgré le fait de la non normalité des sorties. Soit les résultats de MORRIS sont trop imprécis soit le non respect de la normalité des distributions n'a pas été un frein trop important à l'analyse VCE de FAST dans ce cas.
-
-Cependant, avec la méthode FAST, nous avons trouvé que le parametre "seuil" à une trés grande influence sur les sorties du modèles. 
+<p style="text-align: justify;">
+Le modèle modifié a permis de simuler les effets de la mise en place de quarantaine. Selon nos postulats la quarantaine conditionnelle est efficace pour endiguer l'épidémie et limiter la propagation de la maladie au sein de la population. Le pic épidémique a été presque éliminé par rapport aux résultats du modèle de base.L'analyse de sensibilité a permis de détecter quels paramètres ont des effets sur les sorties du modèle. Le "seuil" qui traduit la proportion d'individus morts de la maladie au delà duquel la quarantaine s'enclenche présente de forts effets sur toutes les sorties du modèle. L'efficacité de la quarantaine est donc très sensible au conditions de mise en quarantaine. L'ajout de cette quarantaine semble beaucoup agir en interaction avec l'ensemble des autres paramètres alors que les analyses de sensibilité effectuées lorsque qu'il n'y a pas de quarantaine ne présentait aucune interaction entre les paramètres. Ceci est certainement du à la condition dépendante du seuil qui modifie la dynamique globale. Le seuil serait alors en interaction avec tous les autres paramètres. Notons que les résultats issus de la méthode FAST sont relativement similaire aux résultats de la méthode MORRIS malgré le fait de la non normalité des sorties. Soit les résultats de MORRIS sont trop imprécis soit le non respect de la normalité des distributions n'a pas été un frein trop important à l'analyse VCE de FAST dans ce cas. Cependant, avec la méthode FAST, nous avons trouvé que le parametre "seuil" à une trés grande influence sur les sorties du modèles. 
+</p>
 
 # Conclusion
+<p style="text-align: justify;">
 L'analyse de sensibilité du modèle nous a permis d'identifier les paramètres les plus influents sur les quatre sorties du modèle. Selon la méthode d'analyse utilisée et la sortie considérée, les paramètres les plus influents sur les sorties étaient "trans" et "loss" pour le modèle de base. Avec le modèle modifié, ce sont les paramètres "seuil", "madd" et "trans" qui induisent la plus grande variation des sorties du modèle. Il convient cependant de noter que ces résultats ne sont fiables que dans les plages de variations prises en compte pour chaque paramètre.
 </p>
 

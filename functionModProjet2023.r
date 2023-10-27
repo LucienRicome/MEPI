@@ -123,7 +123,8 @@ modAppli <- function(parametre, sor = "sort"){
 plot_initial = function(classe, titre) { # Faire en ggplot2
   
   plot(1:temps, predictions[[classe]][,1], type = "l", col = "purple", cex = 2, 
-       xlab = "temps (jours)", ylab = "Effectif", main = titre)
+       xlab = "temps (jours)", ylab = "Effectif", main = titre,
+       ylim=c(0,max(predictions[[classe]][,1])+5)  )
   lines(predictions[[classe]][,2], col = "orange", cex = 2)
   lines(predictions[[classe]][,3], col = "red", cex = 2)
   lines(predictions[[classe]][,4], col = "green", cex = 2)
@@ -139,6 +140,10 @@ plot_initial = function(classe, titre) { # Faire en ggplot2
             cex = 0.5)
   }
 }
+
+
+
+
 
 
 
