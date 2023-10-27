@@ -28,20 +28,20 @@ modAppli <- function(parametre, sor = "sort"){
     t2 = parametre[i,10];  # Taux de transmission classe 2
     
     # Transitions entre les états de santé
-    trans = parametre[i,11];  # Taux de transition de XX
+    trans = parametre[i,11];  # Taux de transition 
     lat = parametre[i,12];    # Taux de latence
     rec = parametre[i,13];    # Taux de récupération
     loss = parametre[i,14];   # Taux de perte
-    madd = parametre[i,15];   # Taux d'addition de nouveaux individus XX
+    madd = parametre[i,15];   # Taux d'addition de nouveaux individus 
     
     # INITIALISATION
     MAT <- array(0, dim=c(4,4,temps)); # nb indiv par classe d'?ge en ligne (derni?re ligne = pop tot), ?tat de sant? en colonne, pas de temps (dimension 3)
     nvinf <- array(0, dim=c(temps));
     # conditions initiales (la population est ? sa structure d'?quilibre, calcul?e par ailleurs)
-    MAT[1,1,1] <- 27; # xx
-    MAT[2,1,1] <- 23; # xx
-    MAT[3,1,1] <- 36; # xx
-    MAT[3,3,1] <- 1;  # xx
+    MAT[1,1,1] <- 27; # 27 individus dans la première classe d’âge et dans l’état de santé Susceptible
+    MAT[2,1,1] <- 23; # 23 individus dans la deuxième classe d’âge et dans l’état de santé Susceptible
+    MAT[3,1,1] <- 36; # 36 individus dans la troisième classe d’âge et dans l’état de santé Susceptible
+    MAT[3,3,1] <- 1;  # 1 individus dans la troisième classe d’âge et dans l’état de santé Infectieux
     # effectifs par ?tat de sant?
     MAT[4,1,1] <- sum(MAT[1:3,1,1]); 
     MAT[4,2,1] <- sum(MAT[1:3,2,1]); 
@@ -347,17 +347,15 @@ modAppli_scenario <- function(parametre){
     seuil = parametre[i,17];  # Seuil de mortalité
     
     
-    
-    
     # INITIALISATION
     MAT <- array(0, dim=c(4,5,temps)); # nb indiv par classe d'?ge en ligne (derni?re ligne = pop tot), ?tat de sant? en colonne, pas de temps (dimension 3)
     nvinf <- array(0, dim=c(temps));
     
     # conditions initiales (la population est ? sa structure d'?quilibre, calcul?e par ailleurs)
-    MAT[1,1,1] <- 27; # xx
-    MAT[2,1,1] <- 23; # xx
-    MAT[3,1,1] <- 36; # xx
-    MAT[3,3,1] <- 1;  # xx
+    MAT[1,1,1] <- 27; # 27 individus dans la première classe d’âge et dans l’état de santé Susceptible
+    MAT[2,1,1] <- 23; # 23 individus dans la deuxième classe d’âge et dans l’état de santé Susceptible
+    MAT[3,1,1] <- 36; # 36 individus dans la troisième classe d’âge et dans l’état de santé Susceptible
+    MAT[3,3,1] <- 1;  # 1 individus dans la troisième classe d’âge et dans l’état de santé Infectieux
     # effectifs par ?tat de sant?
     MAT[4,1,1] <- sum(MAT[1:3,1,1]); 
     MAT[4,2,1] <- sum(MAT[1:3,2,1]); 
@@ -375,27 +373,27 @@ modAppli_scenario <- function(parametre){
       if (MAT[4,3,t]*madd < seuil*sum(MAT[4,,t])) { 
         
         
-        # classe d'?ge xx
-        # RQ : les naissances sont XX, les nouveaux n?s ?tant dans l'?tat XX
+        # classe d'âge 1
+        # RQ : les naissances sont produit par la classe 2 et 3, les nouveaux nés étant dans la classe 1
         N <- sum(MAT[4,,t]);	# taille de la pop en t
         MAT[1,1,t+1] <- MAT[1,1,t]*(1-m1-t1-trans*MAT[4,3,t]/N) + loss*MAT[1,5,t]      + max(0, sr*portee*(sum(MAT[2,,t])*f2 + sum(MAT[3,,t])*f3) * (1 - N/K)); 
         MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
         MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-rec)  		  + lat*MAT[1,2,t]; 
         MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-madd-t1-rec);
         MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t] + rec*MAT[1,4,t]; 
-        # classe d'?ge xx
+        # classe d'âge 2
         MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,5,t];
         MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
         MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-rec)		+ lat*MAT[2,2,t];
         MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m2-madd-t2-rec) ;
         MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t] + rec*MAT[2,4,t];
-        # classe d'?ge xx
+        # classe d'âge 3
         MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,5,t];
         MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
         MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-rec)			+ lat*MAT[3,2,t];
         MAT[3,4,t+1] <- MAT[2,4,t]*t2 + MAT[3,4,t]*(1-m3-madd-rec) ;
         MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*MAT[3,3,t] + rec*MAT[3,4,t];
-        # calcul des effectifs par ?tat de sant?
+        # calcul des effectifs par état de santé
         MAT[4,1,t+1] <- sum(MAT[1:3,1,t+1]); 
         MAT[4,2,t+1] <- sum(MAT[1:3,2,t+1]); 
         MAT[4,3,t+1] <- sum(MAT[1:3,3,t+1]);
@@ -406,27 +404,27 @@ modAppli_scenario <- function(parametre){
       } 
       else {   # Quarantaine si la mortalité lié a la mort depasse le suil 
         
-        # classe d'?ge xx
-        # RQ : les naissances sont XX, les nouveaux n?s ?tant dans l'?tat XX
+        # classe d'âge 1
+        # RQ : les naissances sont produit par la classe 2 et 3, les nouveaux nés étant dans la classe 1
         N <- sum(MAT[4,,t]);	# taille de la pop en t
         MAT[1,1,t+1] <- MAT[1,1,t]*(1-m1-t1-trans*MAT[4,3,t]/N) + loss*MAT[1,5,t]      + max(0, sr*portee*(sum(MAT[2,,t])*f2 + sum(MAT[3,,t])*f3) * (1 - N/K)); 
         MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
         MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-eff -rec)  		  + lat*MAT[1,2,t]; 
         MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-madd-t1-rec) + eff*MAT[1,3,t];
         MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t] + rec*MAT[1,4,t]; 
-        # classe d'?ge xx
+        # classe d'âge 2
         MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,5,t];
         MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
         MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-eff -rec)		+ lat*MAT[2,2,t];
         MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m2-madd-t2-rec) + eff*MAT[2,3,t];
         MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t]+rec*MAT[2,4,t];
-        # classe d'?ge xx
+        # classe d'âge 3
         MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,5,t];
         MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
         MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-eff-rec)			+ lat*MAT[3,2,t];
         MAT[3,4,t+1] <- MAT[2,4,t]*t2 + MAT[3,4,t]*(1-m3-madd-rec) + eff*MAT[3,3,t];
         MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*MAT[3,3,t]+ rec*MAT[3,4,t];
-        # calcul des effectifs par ?tat de sant?
+        # calcul des effectifs par état de santé
         MAT[4,1,t+1] <- sum(MAT[1:3,1,t+1]); 
         MAT[4,2,t+1] <- sum(MAT[1:3,2,t+1]); 
         MAT[4,3,t+1] <- sum(MAT[1:3,3,t+1]); 
@@ -438,17 +436,15 @@ modAppli_scenario <- function(parametre){
       
     } # fin du boucle temps
     
-    # sorties ponctuelles ? analyser
-    # XX
+    # sorties ponctuelles à analyser
+    # Prévalence de la maladie
     sortie1 <- (MAT[4,2,temps]+MAT[4,3,temps])/sum(MAT[4,,temps])
-    # xx
+    # résultat de la fonction de transmission à l’état final
     sortie2 <- nvinf[temps]
-    # xx
+    # maximum du nombre d’individu dans l’état infectieux au fil des deux ans
     sortie3 <- max(MAT[4,3,1:temps])
-    # xx
+    # somme des fonction de transmission au cours de la première année de la simulation
     sortie4 <- sum(nvinf[1:365])
-    
-    sortie5 <- data.frame( S= MAT[4,1,1:temps], L =MAT[4,2,1:temps], I= MAT[4,3,1:temps] , Q= MAT[4,4,1:temps] ,R=MAT[4,5,1:temps])
     
     sorties[i,1] <- sortie1;
     sorties[i,2] <- sortie2;
@@ -462,7 +458,7 @@ modAppli_scenario <- function(parametre){
   
 } # fin fonction du mod?le
 
-# peut etre a supprimer après
+# Fonction bis pour tester les effets de madd, seuil et eff
 modAppli_scenario_bis <- function(parametre){  
   
   # CONDITIONS DE SIMULATION
@@ -525,27 +521,26 @@ modAppli_scenario_bis <- function(parametre){
       if (MAT[4,3,t]*madd < seuil*sum(MAT[4,,t])) { 
         
         
-        # classe d'?ge xx
-        # RQ : les naissances sont XX, les nouveaux n?s ?tant dans l'?tat XX
+        # classe d'âge1
         N <- sum(MAT[4,,t]);	# taille de la pop en t
         MAT[1,1,t+1] <- MAT[1,1,t]*(1-m1-t1-trans*MAT[4,3,t]/N) + loss*MAT[1,5,t]      + max(0, sr*portee*(sum(MAT[2,,t])*f2 + sum(MAT[3,,t])*f3) * (1 - N/K)); 
         MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
         MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-rec)  		  + lat*MAT[1,2,t]; 
         MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-madd-t1-rec);
         MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t] + rec*MAT[1,4,t]; 
-        # classe d'?ge xx
+        # classe d'âge 2
         MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,5,t];
         MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
         MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-rec)		+ lat*MAT[2,2,t];
         MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m2-madd-t2-rec) ;
         MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t] + rec*MAT[2,4,t];
-        # classe d'?ge xx
+        # classe d'âge 3
         MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,5,t];
         MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
         MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-rec)			+ lat*MAT[3,2,t];
         MAT[3,4,t+1] <- MAT[2,4,t]*t2 + MAT[3,4,t]*(1-m3-madd-rec) ;
         MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*MAT[3,3,t] + rec*MAT[3,4,t];
-        # calcul des effectifs par ?tat de sant?
+        # calcul des effectifs par état de santé
         MAT[4,1,t+1] <- sum(MAT[1:3,1,t+1]); 
         MAT[4,2,t+1] <- sum(MAT[1:3,2,t+1]); 
         MAT[4,3,t+1] <- sum(MAT[1:3,3,t+1]);
@@ -556,27 +551,26 @@ modAppli_scenario_bis <- function(parametre){
       } 
       else {   # Quarantaine si la mortalité lié a la mort depasse le suil 
         
-        # classe d'?ge xx
-        # RQ : les naissances sont XX, les nouveaux n?s ?tant dans l'?tat XX
+        # classe d'âge 1
         N <- sum(MAT[4,,t]);	# taille de la pop en t
         MAT[1,1,t+1] <- MAT[1,1,t]*(1-m1-t1-trans*MAT[4,3,t]/N) + loss*MAT[1,5,t]      + max(0, sr*portee*(sum(MAT[2,,t])*f2 + sum(MAT[3,,t])*f3) * (1 - N/K)); 
         MAT[1,2,t+1] <- MAT[1,2,t]*(1-m1-t1-lat)			  + trans*MAT[1,1,t]*MAT[4,3,t]/N; 
         MAT[1,3,t+1] <- MAT[1,3,t]*(1-m1-madd-t1-eff -rec)  		  + lat*MAT[1,2,t]; 
         MAT[1,4,t+1] <- MAT[1,4,t]*(1-m1-madd-t1-rec) + eff*MAT[1,3,t];
         MAT[1,5,t+1] <- MAT[1,5,t]*(1-m1-t1-loss) 		  + rec*MAT[1,3,t] + rec*MAT[1,4,t]; 
-        # classe d'?ge xx
+        # classe d'âge 2
         MAT[2,1,t+1] <- MAT[1,1,t]*t1	+ MAT[2,1,t]*(1-m2-t2-trans*MAT[4,3,t]/N) + loss*MAT[2,5,t];
         MAT[2,2,t+1] <- MAT[1,2,t]*t1	+ MAT[2,2,t]*(1-m2-t2-lat)			+ trans*MAT[2,1,t]*MAT[4,3,t]/N;
         MAT[2,3,t+1] <- MAT[1,3,t]*t1	+ MAT[2,3,t]*(1-m2-madd-t2-eff -rec)		+ lat*MAT[2,2,t];
         MAT[2,4,t+1] <- MAT[1,4,t]*t1 + MAT[2,4,t]*(1-m2-madd-t2-rec) + eff*MAT[2,3,t];
         MAT[2,5,t+1] <- MAT[1,5,t]*t1	+ MAT[2,5,t]*(1-m2-t2-loss)			+ rec*MAT[2,3,t]+rec*MAT[2,4,t];
-        # classe d'?ge xx
+        # classe d'âge 3
         MAT[3,1,t+1] <- MAT[2,1,t]*t2	+ MAT[3,1,t]*(1-m3-trans*MAT[4,3,t]/N) 	+ loss*MAT[3,5,t];
         MAT[3,2,t+1] <- MAT[2,2,t]*t2	+ MAT[3,2,t]*(1-m3-lat)				+ trans*MAT[3,1,t]*MAT[4,3,t]/N;
         MAT[3,3,t+1] <- MAT[2,3,t]*t2	+ MAT[3,3,t]*(1-m3-madd-eff-rec)			+ lat*MAT[3,2,t];
         MAT[3,4,t+1] <- MAT[2,4,t]*t2 + MAT[3,4,t]*(1-m3-madd-rec) + eff*MAT[3,3,t];
         MAT[3,5,t+1] <- MAT[2,5,t]*t2	+ MAT[3,5,t]*(1-m3-loss)			+ rec*MAT[3,3,t]+ rec*MAT[3,4,t];
-        # calcul des effectifs par ?tat de sant?
+        # calcul des effectifs par état de santé
         MAT[4,1,t+1] <- sum(MAT[1:3,1,t+1]); 
         MAT[4,2,t+1] <- sum(MAT[1:3,2,t+1]); 
         MAT[4,3,t+1] <- sum(MAT[1:3,3,t+1]); 
@@ -588,16 +582,13 @@ modAppli_scenario_bis <- function(parametre){
       
     } # fin du boucle temps
     
-    # sorties ponctuelles ? analyser
-    # XX
+    # sorties ponctuelles à analyser
     sortie1 <- (MAT[4,2,temps]+MAT[4,3,temps])/sum(MAT[4,,temps])
-    # xx
     sortie2 <- nvinf[temps]
-    # xx
     sortie3 <- max(MAT[4,3,1:temps])
-    # xx
     sortie4 <- sum(nvinf[1:365])
     
+    # sortie facultative pour tester les effets des paramètres madd, eff et seuil
     sortie5 <- data.frame( S= MAT[4,1,1:temps], L =MAT[4,2,1:temps], I= MAT[4,3,1:temps] , Q= MAT[4,4,1:temps] ,R=MAT[4,5,1:temps])
     
     sorties[i,1] <- sortie1;
@@ -606,9 +597,9 @@ modAppli_scenario_bis <- function(parametre){
     sorties[i,4] <- sortie4;
     
     
-  }# fin boucle sc?narios AS
+  }# fin boucle scénarios AS
   
     return(sortie5)
   
-} # fin fonction du mod?le
+} # fin fonction du modèle
 
