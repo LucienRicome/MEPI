@@ -1,17 +1,17 @@
 ---
-title: "UE MEPI: Analyse de sensibilité "
+title: 'UE MEPI: Analyse de sensibilité '
 author: "Lucien Ricome & Abdourahmane Diallo"
 date: "2023-09-11"
-
-output: 
-  html_document: 
+output:
+  html_document:
     toc: yes
     toc_float: yes
     code_fold: hide
     warning: no
     message: no
     number_sections: yes
-    
+  pdf_document:
+    toc: yes
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, results = "hide")
@@ -24,7 +24,7 @@ source("functionModProjet2023.r") # Script des fonction
 library(dplyr)
 library(tidyr)
 library(knitr) 
-library(kableExtra)
+#library(kableExtra)
 library(reactable)
 library(sensitivity)
 library(labelled)
